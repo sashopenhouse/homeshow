@@ -442,7 +442,7 @@ export default function MapEngine() {
             maxZoom={1}
             zoom={-0.5}
             center={[yy(900), 875]}
-            style={{ height: "100%", width: "100%", background: "#ffffff" }}
+            style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, background: "#ffffff" }}
             className="z-0 border border-border"
           >
             {/* Draw Rink Outlines */}
