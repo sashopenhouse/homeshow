@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import Link from "next/link";
@@ -23,6 +23,31 @@ const stats = [
 
 export default function HomePage() {
   const container = useRef<HTMLDivElement>(null);
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    const targetDate = new Date("2026-01-31T09:00:00").getTime();
+
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      } else {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+        setTimeLeft({ days, hours, minutes, seconds });
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useGSAP(
     () => {
@@ -43,6 +68,10 @@ export default function HomePage() {
       .fromTo(".hero-btn",
         { y: 20, opacity: 0, scale: 0.97 },
         { y: 0, opacity: 1, scale: 1, duration: 0.6, stagger: 0.1, ease: "back.out(1.4)" }, "-=0.3"
+      )
+      .fromTo(".hero-countdown",
+        { y: 25, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7, ease: "power3.out" }, "-=0.5"
       )
       .fromTo(".stat-pill",
         { y: 15, opacity: 0 },
@@ -74,58 +103,87 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
         </div>
 
-        {/* Hero content — bottom-left anchored */}
-        <div className="relative z-10 max-w-7xl mx-auto w-full px-6 pb-16 pt-32 flex flex-col items-start">
-          {/* Eyebrow badge */}
-          <div className="hero-eyebrow inline-flex items-center gap-2 px-4 py-1.5 rounded-none bg-primary/90 border border-primary mb-6 backdrop-blur-sm">
-            <Star size={11} className="text-white fill-white" />
-            <span className="text-xs font-bold text-white tracking-widest uppercase">
-              January 31 &amp; February 1, 2026 · Nexus Center
-            </span>
-            <Star size={11} className="text-white fill-white" />
+        {/* Hero content */}
+        <div className="relative z-10 max-w-7xl mx-auto w-full px-6 pb-16 pt-32 flex flex-col md:flex-row md:items-end md:justify-between gap-12">
+          {/* Left Column */}
+          <div className="flex flex-col items-start max-w-xl">
+            {/* Eyebrow badge */}
+            <div className="hero-eyebrow inline-flex items-center gap-2 px-4 py-1.5 rounded-none bg-primary/90 border border-primary mb-6 backdrop-blur-sm">
+              <Star size={11} className="text-white fill-white" />
+              <span className="text-xs font-bold text-white tracking-widest uppercase">
+                January 31 &amp; February 1, 2026 · Nexus Center
+              </span>
+              <Star size={11} className="text-white fill-white" />
+            </div>
+
+            {/* Main Title */}
+            <h1 className="hero-title text-6xl md:text-8xl font-black tracking-tighter leading-none text-white mb-2 drop-shadow-lg">
+              Home Show
+            </h1>
+            <h2 className="hero-title text-4xl md:text-5xl font-extrabold tracking-tight text-primary mb-6 drop-shadow-md">
+              at Nexus Center
+            </h2>
+
+            <p className="hero-sub text-base md:text-lg text-white/80 leading-relaxed mb-10">
+              The region's premier event for home improvement, architectural design,
+              and modern lifestyle — all under one roof.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a
+                href="https://kesslerpromotionsinc.ticketspice.com/2026-home-show-nexus-center-admission"
+                target="_blank"
+                rel="noopener noreferrer"
+                id="hero-buy-tickets"
+                className="hero-btn inline-flex items-center gap-2 px-8 py-4 rounded-none bg-primary text-white font-bold text-base hover:bg-primary/90 transition-all hover:scale-105 hover:shadow-[0_8px_30px_oklch(0.55_0.18_142/0.45)] active:scale-95"
+              >
+                <Ticket size={18} />
+                Buy Tickets
+              </a>
+              <Link
+                href="/vendors"
+                id="hero-become-vendor"
+                className="hero-btn inline-flex items-center gap-2 px-8 py-4 rounded-none bg-white/15 backdrop-blur-md border border-white/30 text-white font-bold text-base hover:bg-white/25 hover:border-white/50 transition-all hover:scale-105 active:scale-95"
+              >
+                <Building2 size={18} />
+                Become a Vendor
+              </Link>
+              <Link
+                href="/vendors/list"
+                id="hero-floor-plan"
+                className="hero-btn inline-flex items-center gap-2 px-8 py-4 rounded-none border border-white/20 text-white/80 font-semibold text-base hover:border-white/40 hover:text-white transition-all hover:scale-105 active:scale-95"
+              >
+                <Map size={18} />
+                View Floor Plan
+              </Link>
+            </div>
           </div>
 
-          {/* Main Title */}
-          <h1 className="hero-title text-6xl md:text-8xl font-black tracking-tighter leading-none text-white mb-2 drop-shadow-lg">
-            Home Show
-          </h1>
-          <h2 className="hero-title text-4xl md:text-5xl font-extrabold tracking-tight text-primary mb-6 drop-shadow-md">
-            at Nexus Center
-          </h2>
-
-          <p className="hero-sub max-w-xl text-base md:text-lg text-white/80 leading-relaxed mb-10">
-            The region's premier event for home improvement, architectural design,
-            and modern lifestyle — all under one roof.
-          </p>
-
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <a
-              href="https://kesslerpromotionsinc.ticketspice.com/2026-home-show-nexus-center-admission"
-              target="_blank"
-              rel="noopener noreferrer"
-              id="hero-buy-tickets"
-              className="hero-btn inline-flex items-center gap-2 px-8 py-4 rounded-none bg-primary text-white font-bold text-base hover:bg-primary/90 transition-all hover:scale-105 hover:shadow-[0_8px_30px_oklch(0.55_0.18_142/0.45)] active:scale-95"
-            >
-              <Ticket size={18} />
-              Buy Tickets
-            </a>
-            <Link
-              href="/vendors"
-              id="hero-become-vendor"
-              className="hero-btn inline-flex items-center gap-2 px-8 py-4 rounded-none bg-white/15 backdrop-blur-md border border-white/30 text-white font-bold text-base hover:bg-white/25 hover:border-white/50 transition-all hover:scale-105 active:scale-95"
-            >
-              <Building2 size={18} />
-              Become a Vendor
-            </Link>
-            <Link
-              href="/vendors/list"
-              id="hero-floor-plan"
-              className="hero-btn inline-flex items-center gap-2 px-8 py-4 rounded-none border border-white/20 text-white/80 font-semibold text-base hover:border-white/40 hover:text-white transition-all hover:scale-105 active:scale-95"
-            >
-              <Map size={18} />
-              View Floor Plan
-            </Link>
+          {/* Right Column: flat square countdown card */}
+          <div className="hero-countdown bg-black/40 backdrop-blur-md border border-white/10 p-8 rounded-none w-full md:w-80 shrink-0 self-start md:self-end">
+            <h3 className="text-xs font-bold text-white/60 uppercase tracking-widest mb-4 text-center md:text-left">Show Starts In</h3>
+            <div className="grid grid-cols-4 gap-2 text-center">
+              <div className="bg-white/5 border border-white/10 py-3 rounded-none">
+                <span className="block text-2xl font-black text-white">{String(timeLeft.days).padStart(2, '0')}</span>
+                <span className="text-[9px] uppercase font-bold text-white/50">Days</span>
+              </div>
+              <div className="bg-white/5 border border-white/10 py-3 rounded-none">
+                <span className="block text-2xl font-black text-white">{String(timeLeft.hours).padStart(2, '0')}</span>
+                <span className="text-[9px] uppercase font-bold text-white/50">Hours</span>
+              </div>
+              <div className="bg-white/5 border border-white/10 py-3 rounded-none">
+                <span className="block text-2xl font-black text-white">{String(timeLeft.minutes).padStart(2, '0')}</span>
+                <span className="text-[9px] uppercase font-bold text-white/50">Mins</span>
+              </div>
+              <div className="bg-white/5 border border-white/10 py-3 rounded-none">
+                <span className="block text-2xl font-black text-primary">{String(timeLeft.seconds).padStart(2, '0')}</span>
+                <span className="text-[9px] uppercase font-bold text-white/50">Secs</span>
+              </div>
+            </div>
+            <div className="mt-4 text-[10px] text-white/40 text-center font-bold uppercase tracking-wider">
+              Jan 31, 2026 @ 9:00 AM EST
+            </div>
           </div>
         </div>
 

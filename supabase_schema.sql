@@ -95,3 +95,31 @@ INSERT INTO posts (title, slug, excerpt, content, category, author, created_at) 
 ('Exhibitor Spotlight: New York Sash Brings Custom Siding and Bath Solutions', 'exhibitor-spotlight-new-york-sash', 'Learn more about our presenting sponsor New York Sash and the exclusive home improvement offers they are bringing to the Nexus Center floor.', 'Our presenting sponsor New York Sash will showcase top-tier custom siding, bath systems, and window options. Find them directly at booth A1 for exclusive discount consultations. Kessler promotions are bringing state of the art home remodeling directly to your doorsteps.', 'Exhibitors', 'Kessler Promotions', NOW() - INTERVAL '2 days'),
 ('Interactive Children''s Exhibits & Zoomobile details announced', 'children-exhibits-zoomobile-announced', 'Discover the educational and family entertainment options available for attendees, including hands-on activities by the Utica Children''s Museum.', 'Bring the whole family! The show will feature live interactive wildlife exhibits from the Zoomobile, along with dedicated educational play areas created by the Children''s Museum.', 'Entertainment', 'Event Coordinator', NOW() - INTERVAL '3 days');
 
+-- 5. Create Sponsors Table
+CREATE TABLE IF NOT EXISTS sponsors (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL,
+  logo_url TEXT,
+  description TEXT,
+  tier VARCHAR(100) NOT NULL DEFAULT 'Major Partners',
+  order_index INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE sponsors ENABLE ROW LEVEL SECURITY;
+
+-- Policies: Anyone can view, anyone can insert/delete (for ease of the admin demo/sponsors organizer feature)
+CREATE POLICY "Sponsors are viewable by everyone" ON sponsors FOR SELECT USING (true);
+CREATE POLICY "Sponsors are insertable by everyone" ON sponsors FOR INSERT WITH CHECK (true);
+CREATE POLICY "Sponsors are updatable by authenticated users only" ON sponsors FOR UPDATE USING (auth.role() = 'authenticated');
+CREATE POLICY "Sponsors are deletable by everyone" ON sponsors FOR DELETE USING (true);
+
+-- Seed initial sponsors data
+INSERT INTO sponsors (name, description, tier, order_index) VALUES 
+('New York Sash', 'Utica''s premier home improvement company specializing in windows, siding, and baths.', 'Presenting Sponsor', 0),
+('Utica University Nexus Center', 'The state-of-the-art sports and event facility hosting this year''s Home Show.', 'Major Partners', 1),
+('Kessler Promotions', 'Leading event organizers bringing communities together.', 'Major Partners', 2);
+
+

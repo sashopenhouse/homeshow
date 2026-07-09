@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FileText, Users, BarChart3, ArrowLeft, Shield } from "lucide-react";
+import { LayoutDashboard, FileText, Users, BarChart3, ArrowLeft, Shield, Award } from "lucide-react";
 
 const adminSidebarLinks = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/posts", label: "Manage Posts", icon: FileText },
   { href: "/admin/signups", label: "Vendor Signups", icon: Users },
+  { href: "/admin/sponsors", label: "Sponsors", icon: Award },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
