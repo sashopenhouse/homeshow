@@ -170,7 +170,7 @@ export default function MapEngine() {
       </div>
 
       {/* Map Element */}
-      <div className="flex-1 min-h-[500px]">
+      <div className="w-full h-[600px] relative">
         <MapContainer
           crs={L.CRS.Simple}
           bounds={bounds}
