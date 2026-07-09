@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LayoutDashboard, FileText, Users, BarChart3, ArrowLeft, Shield, Award } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import type { User } from "@supabase/supabase-js";
+import { LayoutDashboard, FileText, Users, BarChart3, ArrowLeft, Shield, Award, LogOut, Loader2 } from "lucide-react";
 
 const adminSidebarLinks = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -14,6 +17,60 @@ const adminSidebarLinks = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    // Check auth state on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        // Not logged in — redirect to login (unless already on login page)
+        if (!pathname.startsWith("/admin/login")) {
+          router.replace("/admin/login");
+        }
+      } else {
+        setUser(session.user);
+      }
+      setChecking(false);
+    });
+
+    // Subscribe to auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        router.replace("/admin/login");
+      } else {
+        setUser(session.user);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [pathname, router]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/admin/login");
+  };
+
+  // If on login page, just render it directly (no sidebar wrapper)
+  if (pathname.startsWith("/admin/login")) {
+    return <>{children}</>;
+  }
+
+  // Show spinner while checking auth
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-muted-foreground">
+          <Loader2 size={28} className="animate-spin text-primary" />
+          <span className="text-sm font-semibold">Verifying session...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // If no user after check, render nothing (redirect is in progress)
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-[#fafafa] flex flex-col md:flex-row text-foreground font-sans">
@@ -55,7 +112,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-border space-y-2">
+          {/* Logged-in user email */}
+          <div className="px-2 py-1.5 text-xs text-muted-foreground font-semibold truncate">
+            {user.email}
+          </div>
+
+          {/* Sign Out */}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 w-full px-3 py-2.5 text-xs font-bold border border-border text-destructive hover:bg-destructive/5 hover:border-destructive/30 transition-all rounded-none"
+          >
+            <LogOut size={14} />
+            Sign Out
+          </button>
+
           <Link
             href="/"
             className="flex items-center justify-center gap-2 w-full py-2.5 text-xs font-bold border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-all"

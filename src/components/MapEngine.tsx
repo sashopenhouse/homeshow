@@ -5,8 +5,9 @@ import { MapContainer, Polygon, Marker, Tooltip, Rectangle } from "react-leaflet
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { supabase } from "@/lib/supabase";
-import { X, Check, ShieldAlert, Award } from "lucide-react";
+import { X, Check, ShieldAlert, Award, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { User } from "@supabase/supabase-js";
 
 const MAP_H = 1800;
 const yy = (y: number) => MAP_H - y;
@@ -223,6 +224,7 @@ export default function MapEngine() {
   const [adminMode, setAdminMode] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [authUser, setAuthUser] = useState<User | null>(null);
 
   // Simple coordinate system bounding coordinates
   const bounds: L.LatLngBoundsExpression = [
@@ -275,6 +277,15 @@ export default function MapEngine() {
 
   useEffect(() => {
     loadData();
+    // Check auth state for admin map toggle
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setAuthUser(session?.user ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAuthUser(session?.user ?? null);
+      if (!session) setAdminMode(false); // disable admin mode on logout
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleSelectStall = (stall: StallData) => {
@@ -413,19 +424,33 @@ export default function MapEngine() {
       {/* Top Banner Control Panel */}
       <div className="absolute top-4 right-4 z-[1000] bg-white border border-border p-3 shadow-md flex items-center gap-3 rounded-none">
         <div className="flex items-center gap-2">
-          <ShieldAlert size={16} className={adminMode ? "text-primary animate-pulse" : "text-muted-foreground"} />
-          <span className="text-xs font-bold text-foreground">Interactive Admin Mode</span>
+          {authUser ? (
+            <ShieldAlert size={16} className={adminMode ? "text-primary animate-pulse" : "text-muted-foreground"} />
+          ) : (
+            <Lock size={16} className="text-muted-foreground/50" />
+          )}
+          <span className="text-xs font-bold text-foreground">Admin Mode</span>
         </div>
-        <button
-          onClick={() => setAdminMode(!adminMode)}
-          className={`px-3 py-1 text-xs font-bold transition-all rounded-none border ${
-            adminMode
-              ? "bg-primary text-white border-primary"
-              : "bg-white text-muted-foreground border-border hover:bg-muted"
-          }`}
-        >
-          {adminMode ? "ENABLED" : "DISABLED"}
-        </button>
+        {authUser ? (
+          <button
+            onClick={() => setAdminMode(!adminMode)}
+            className={`px-3 py-1 text-xs font-bold transition-all rounded-none border ${
+              adminMode
+                ? "bg-primary text-white border-primary"
+                : "bg-white text-muted-foreground border-border hover:bg-muted"
+            }`}
+          >
+            {adminMode ? "ENABLED" : "DISABLED"}
+          </button>
+        ) : (
+          <a
+            href="/admin/login"
+            className="px-3 py-1 text-xs font-bold border border-border text-muted-foreground/60 rounded-none bg-muted/30"
+            title="Sign in to enable admin mode"
+          >
+            LOCKED
+          </a>
+        )}
       </div>
 
       {/* Interactive Map Layout Container */}
