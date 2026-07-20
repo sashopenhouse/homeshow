@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { Award, Building2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 
 interface Sponsor {
@@ -136,11 +137,21 @@ export default function SponsorsPage() {
                         className="sponsor-card bg-white border border-border rounded-none p-8 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300 flex flex-col justify-between"
                       >
                         <div>
-                          {/* Logo placeholder */}
-                          <div className="h-20 bg-muted/40 rounded-none flex items-center justify-center mb-6 border border-border/60">
-                            <Building2 size={32} className="text-muted-foreground/60" />
-                            <span className="ml-2 font-bold text-muted-foreground/80">{sponsor.name}</span>
-                          </div>
+                          {sponsor.logo_url ? (
+                            <div className="h-24 relative mb-6">
+                              <Image 
+                                src={sponsor.logo_url} 
+                                alt={`${sponsor.name} logo`}
+                                fill
+                                className="object-contain object-left"
+                              />
+                            </div>
+                          ) : (
+                            <div className="h-20 bg-muted/40 rounded-none flex items-center justify-center mb-6 border border-border/60">
+                              <Building2 size={32} className="text-muted-foreground/60" />
+                              <span className="ml-2 font-bold text-muted-foreground/80">{sponsor.name}</span>
+                            </div>
+                          )}
                           <h3 className="text-xl font-bold text-foreground mb-2">{sponsor.name}</h3>
                           <p className="text-muted-foreground text-sm leading-relaxed">{sponsor.description}</p>
                         </div>

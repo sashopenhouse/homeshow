@@ -237,6 +237,38 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Giveaways Section */}
+      <section className="relative z-10 w-full bg-secondary/30 py-16">
+        <div className="max-w-7xl mx-auto px-6 w-full">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground mb-3">
+              Exciting <span className="text-primary">Giveaways</span>
+            </h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">
+              Don't miss your chance to win incredible prizes throughout the weekend!
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="relative w-full aspect-[21/9] bg-muted overflow-hidden group border border-border/50">
+              <Image 
+                src="/giveaways/giveaway-25k-banner.png" 
+                alt="$25,000 Giveaway" 
+                fill 
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div className="relative w-full aspect-[21/9] bg-muted overflow-hidden group border border-border/50">
+              <Image 
+                src="/giveaways/tasting-giveaway-banner.png" 
+                alt="Food & Beverage Tasting Giveaway" 
+                fill 
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Bottom CTA band */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 pb-20 w-full">
         <div className="bg-primary rounded-none p-10 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-lg">

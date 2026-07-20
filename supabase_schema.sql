@@ -122,4 +122,36 @@ INSERT INTO sponsors (name, description, tier, order_index) VALUES
 ('Utica University Nexus Center', 'The state-of-the-art sports and event facility hosting this year''s Home Show.', 'Major Partners', 1),
 ('Kessler Promotions', 'Leading event organizers bringing communities together.', 'Major Partners', 2);
 
+-- 6. Create Vendor Posts Table (Business Feed)
+CREATE TABLE vendor_posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  vendor_id UUID REFERENCES vendors(id) ON DELETE CASCADE,
+  vendor_name VARCHAR(255), -- denormalized for display when vendor_id is not set
+  title VARCHAR(255) NOT NULL,
+  body TEXT NOT NULL,
+  image_url TEXT,
+  post_type VARCHAR(50) DEFAULT 'update', -- 'update', 'promotion', 'announcement'
+  status VARCHAR(20) DEFAULT 'pending',   -- 'pending', 'approved', 'rejected'
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE vendor_posts ENABLE ROW LEVEL SECURITY;
+
+-- Public can read approved posts only
+CREATE POLICY "Approved vendor posts are viewable by everyone"
+  ON vendor_posts FOR SELECT USING (status = 'approved');
+
+-- Anyone can submit a post (moderated before going public)
+CREATE POLICY "Anyone can submit a vendor post"
+  ON vendor_posts FOR INSERT WITH CHECK (true);
+
+-- Only authenticated admins can update (approve/reject)
+CREATE POLICY "Admins can update vendor posts"
+  ON vendor_posts FOR UPDATE USING (auth.role() = 'authenticated');
+
+-- Only authenticated admins can delete
+CREATE POLICY "Admins can delete vendor posts"
+  ON vendor_posts FOR DELETE USING (auth.role() = 'authenticated');
 

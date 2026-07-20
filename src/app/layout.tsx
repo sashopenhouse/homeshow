@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   description: "The official website for the Home Show at Nexus Center.",
 };
 
+import Footer from "@/components/Footer";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,6 +30,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans">
         <Navbar />
         <TransitionLayout>{children}</TransitionLayout>
+        <Footer />
       </body>
     </html>
   );
