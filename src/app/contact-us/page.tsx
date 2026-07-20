@@ -128,6 +128,22 @@ export default function ContactUsPage() {
             </Button>
           </form>
         </div>
+
+        {/* Location Map */}
+        <div className="mt-20 border border-border bg-white p-2 md:p-4 shadow-sm fade-in-header">
+          <div className="w-full aspect-[21/9] md:aspect-[3/1] bg-muted relative">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2931.2581622383816!2d-75.23439402345521!3d43.10427327113117!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89d94121e7855555%3A0xc34ccfa9f0a20f92!2sUtica%20University%20Nexus%20Center!5e0!3m2!1sen!2sus!4v1707073235655!5m2!1sen!2sus"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen={true}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="absolute inset-0 grayscale contrast-125 opacity-90 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
+            ></iframe>
+          </div>
+        </div>
       </div>
     </main>
   );
