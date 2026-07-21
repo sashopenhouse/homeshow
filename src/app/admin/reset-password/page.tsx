@@ -70,7 +70,12 @@ export default function AdminResetPasswordPage() {
       setTimeout(() => router.push("/admin"), 2000);
     } catch (err: any) {
       console.error("Password update error:", err);
-      setError(err.message || "Could not update your password. Request a new reset link and try again.");
+      let msg = err?.message || "Could not update your password. Request a new reset link and try again.";
+      if (err?.name === "AuthRetryableFetchError" || /failed to fetch|fetch|network/i.test(msg)) {
+        msg =
+          "Couldn't reach the authentication server. If this is the deployed site, make sure the Supabase environment variables are configured in your hosting settings.";
+      }
+      setError(msg);
     } finally {
       setLoading(false);
     }

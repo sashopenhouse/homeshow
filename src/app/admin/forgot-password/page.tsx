@@ -34,7 +34,12 @@ export default function AdminForgotPasswordPage() {
       setSent(true);
     } catch (err: any) {
       console.error("Password reset error:", err);
-      setError(err.message || "Could not send the reset email. Please try again.");
+      let msg = err?.message || "Could not send the reset email. Please try again.";
+      if (err?.name === "AuthRetryableFetchError" || /failed to fetch|fetch|network/i.test(msg)) {
+        msg =
+          "Couldn't reach the authentication server. If this is the deployed site, make sure the Supabase environment variables are configured in your hosting settings.";
+      }
+      setError(msg);
     } finally {
       setLoading(false);
     }
