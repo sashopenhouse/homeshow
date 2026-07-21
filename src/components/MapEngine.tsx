@@ -12,8 +12,9 @@ const MAP_H = 1800;
 const yy = (y: number) => MAP_H - y;
 const MIN_SIZE = 24; // minimum booth width/height in design units
 
-// A booth in editable state also carries its DB row id (when it came from the DB).
-type Stall = StallData & { id?: string };
+// A booth in editable state also carries its DB row id (when it came from the DB)
+// and optional internal admin notes.
+type Stall = StallData & { id?: string; notes?: string };
 
 const zonesData = [
   { name: 'KID\'S ZONE (177-179)', x1: 65, y1: 520, x2: 145, y2: 750, floor: RINK2 },
@@ -40,9 +41,15 @@ const moveIcon = L.divIcon({
   iconSize: [22, 22],
   iconAnchor: [11, 11]
 });
-const cornerIcon = L.divIcon({
+const cornerIconNWSE = L.divIcon({
   className: "",
   html: `<div style="width:12px;height:12px;background:#fff;border:2px solid #003d7a;box-shadow:0 1px 3px rgba(0,0,0,.35);cursor:nwse-resize;"></div>`,
+  iconSize: [12, 12],
+  iconAnchor: [6, 6]
+});
+const cornerIconNESW = L.divIcon({
+  className: "",
+  html: `<div style="width:12px;height:12px;background:#fff;border:2px solid #003d7a;box-shadow:0 1px 3px rgba(0,0,0,.35);cursor:nesw-resize;"></div>`,
   iconSize: [12, 12],
   iconAnchor: [6, 6]
 });
@@ -89,6 +96,15 @@ function parseBbox(raw: unknown): { x1: number; y1: number; x2: number; y2: numb
   return null;
 }
 
+// Keep a booth's box inside the map extent so it can't be dragged/resized
+// off-canvas (which would persist and be hard to recover).
+const MAP_W = 1750;
+function clampBox(b: { x1: number; y1: number; x2: number; y2: number }) {
+  const cx = (v: number) => Math.max(0, Math.min(v, MAP_W));
+  const cy = (v: number) => Math.max(0, Math.min(v, MAP_H));
+  return { x1: cx(b.x1), y1: cy(b.y1), x2: cx(b.x2), y2: cy(b.y2) };
+}
+
 // Captures the Leaflet map instance so we can place new booths at the current view center.
 function MapRefSetter({ mapRef }: { mapRef: React.MutableRefObject<L.Map | null> }) {
   const map = useMap();
@@ -106,8 +122,10 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
   const [selectedVendorId, setSelectedVendorId] = useState<string>("");
   const [vendorInputText, setVendorInputText] = useState<string>("");
   const [numberInput, setNumberInput] = useState<string>("");
+  const [notesInput, setNotesInput] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [dbBacked, setDbBacked] = useState(false);
 
   // Editing is driven by the `admin` prop: /admin/booths passes admin (editing on),
   // the public floor plan renders it without the prop (view-only). Writes are also
@@ -133,12 +151,29 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
   async function loadData() {
     try {
       // 1. Fetch booths — geometry (coordinates/floor) + assignment (vendor).
-      // Select "*" (not an explicit `floor`) so this query still works BEFORE
-      // the Phase 1 migration adds the floor column — otherwise it would error
-      // and drop all assignment coloring on the live public map.
-      const { data: boothsData } = await supabase
-        .from("booths")
-        .select("*, vendors ( company_name )");
+      // `notes` is requested ONLY in admin mode so internal notes never reach
+      // the public floor plan's network payload. We try progressively simpler
+      // column sets so the query still works before the floor/notes columns
+      // exist (pre-migration), without ever exposing notes publicly.
+      const colSets = adminMode
+        ? [
+            "id, booth_number, coordinates, floor, vendor_id, status, notes, vendors ( company_name )",
+            "id, booth_number, coordinates, floor, vendor_id, status, vendors ( company_name )",
+            "id, booth_number, coordinates, vendor_id, status, vendors ( company_name )"
+          ]
+        : [
+            "id, booth_number, coordinates, floor, vendor_id, status, vendors ( company_name )",
+            "id, booth_number, coordinates, vendor_id, status, vendors ( company_name )"
+          ];
+
+      let boothsData: any[] | null = null;
+      for (const cols of colSets) {
+        const resp = await supabase.from("booths").select(cols);
+        if (!resp.error) {
+          boothsData = resp.data as any[] | null;
+          break;
+        }
+      }
 
       const loadedAssignments: Record<string, { id?: string; vendor_name: string }> = {};
       const dbStalls: Stall[] = [];
@@ -153,7 +188,7 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
           }
           const box = parseBbox(b.coordinates);
           if (box) {
-            dbStalls.push({ id: b.id, number: b.booth_number, floor: b.floor || "", ...box });
+            dbStalls.push({ id: b.id, number: b.booth_number, floor: b.floor || "", notes: b.notes || "", ...box });
           }
         });
       }
@@ -162,6 +197,8 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
       // Prefer DB geometry once the layout has been seeded (Phase 1 migration);
       // otherwise fall back to the bundled default layout so the map always renders.
       setStalls(dbStalls.length > 0 ? dbStalls : stallsData);
+      // dbBacked = the map is reading real DB rows (with ids) that edits can save to.
+      setDbBacked(dbStalls.length > 0);
 
       // 2. Fetch live vendors list (for the assignment dropdown)
       const { data: vendorsData } = await supabase
@@ -186,6 +223,7 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
   const handleSelectStall = (stall: Stall) => {
     setSelectedNumber(stall.number);
     setNumberInput(stall.number);
+    setNotesInput(stall.notes || "");
     const existing = assignments[stall.number];
     if (existing) {
       setSelectedVendorId(existing.id || "");
@@ -201,7 +239,8 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
   // ---- Geometry editing ---------------------------------------------------
 
   const updateBox = (number: string, box: { x1: number; y1: number; x2: number; y2: number }) => {
-    setStalls((prev) => prev.map((s) => (s.number === number ? { ...s, ...box } : s)));
+    const clamped = clampBox(box);
+    setStalls((prev) => prev.map((s) => (s.number === number ? { ...s, ...clamped } : s)));
   };
 
   const persistGeometry = async (s: Stall) => {
@@ -296,6 +335,7 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
       setStalls((prev) => [...prev, { id: data?.id, number, floor: RINK2, ...box }]);
       setSelectedNumber(number);
       setNumberInput(number);
+      setNotesInput("");
       setSelectedVendorId("");
       setVendorInputText("");
     } catch (err) {
@@ -341,6 +381,8 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
   const changeFloor = async (floor: string) => {
     const target = selectedStall;
     if (!target) return;
+    const prevFloor = target.floor;
+    // optimistic
     setStalls((prev) => prev.map((s) => (s.number === target.number ? { ...s, floor } : s)));
     try {
       const q = supabase.from("booths").update({ floor, updated_at: new Date().toISOString() });
@@ -348,6 +390,30 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
       if (error) throw error;
     } catch (err) {
       console.error("Failed to update floor:", err);
+      // revert so the UI doesn't show an unsaved value
+      setStalls((prev) => prev.map((s) => (s.number === target.number ? { ...s, floor: prevFloor } : s)));
+      alert("Could not save the floor change.");
+    }
+  };
+
+  const saveNotes = async () => {
+    const target = selectedStall;
+    if (!target) return;
+    const notes = notesInput;
+    const prevNotes = target.notes || "";
+    if (prevNotes === notes) return;
+    // optimistic
+    setStalls((prev) => prev.map((s) => (s.number === target.number ? { ...s, notes } : s)));
+    try {
+      const q = supabase.from("booths").update({ notes, updated_at: new Date().toISOString() });
+      const { error } = target.id ? await q.eq("id", target.id) : await q.eq("booth_number", target.number);
+      if (error) throw error;
+    } catch (err) {
+      console.error("Failed to save notes:", err);
+      // revert both the stall and the textarea
+      setStalls((prev) => prev.map((s) => (s.number === target.number ? { ...s, notes: prevNotes } : s)));
+      setNotesInput(prevNotes);
+      alert("Could not save notes.");
     }
   };
 
@@ -630,7 +696,7 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
                     key={`handle-${key}`}
                     draggable
                     position={[yy(cyv), cxv]}
-                    icon={cornerIcon}
+                    icon={key === "a" || key === "d" ? cornerIconNWSE : cornerIconNESW}
                     zIndexOffset={1000}
                     eventHandlers={{ drag: (e) => onCornerDrag(key, e), dragend: onEditDragEnd }}
                   />
@@ -650,9 +716,15 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
               <Plus size={14} />
               Add Booth
             </button>
-            <span className="text-[10px] text-muted-foreground font-semibold leading-tight">
-              Click a booth to edit · drag <Move size={9} className="inline -mt-0.5" /> to move · drag corners to resize
-            </span>
+            {dbBacked ? (
+              <span className="text-[10px] text-muted-foreground font-semibold leading-tight">
+                Click a booth to edit · drag <Move size={9} className="inline -mt-0.5" /> to move · drag corners to resize
+              </span>
+            ) : (
+              <span className="text-[10px] text-amber-700 font-bold leading-tight">
+                Showing the built-in default layout — run the booth-layout migration in Supabase to save edits.
+              </span>
+            )}
           </div>
         )}
 
@@ -720,6 +792,17 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
                     <option value={RINK2}>Rink 2</option>
                     <option value={RINK3}>Rink 3</option>
                   </select>
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Notes</label>
+                  <textarea
+                    value={notesInput}
+                    onChange={(e) => setNotesInput(e.target.value)}
+                    onBlur={saveNotes}
+                    rows={3}
+                    className="w-full p-2.5 rounded-none border border-border bg-background text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                    placeholder="Internal notes — power/water needs, special requests, etc."
+                  />
                 </div>
                 <button
                   onClick={deleteBooth}
