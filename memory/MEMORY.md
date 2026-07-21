@@ -1,2 +1,0 @@
-- [Vercel + Supabase env](vercel-supabase-env.md) — deployed auth fails with "Failed to fetch" unless NEXT_PUBLIC_SUPABASE_* are set in Vercel + redeploy
-- [Push workflow](push-workflow.md) — "push" means commit straight to main; no branch/PR
