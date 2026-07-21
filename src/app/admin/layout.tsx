@@ -5,15 +5,20 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
-import { LayoutDashboard, FileText, Users, BarChart3, ArrowLeft, Shield, Award, LogOut, Loader2 } from "lucide-react";
+import { LayoutDashboard, FileText, Users, BarChart3, ArrowLeft, Shield, Award, LogOut, Loader2, Megaphone } from "lucide-react";
 
 const adminSidebarLinks = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/posts", label: "Manage Posts", icon: FileText },
+  { href: "/admin/vendor-posts", label: "Vendor Feed", icon: Megaphone },
   { href: "/admin/signups", label: "Vendor Signups", icon: Users },
   { href: "/admin/sponsors", label: "Sponsors", icon: Award },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
 ];
+
+// Routes under /admin that must render without the auth guard or sidebar
+// (login and the password-recovery flow, which relies on a temporary session).
+const PUBLIC_ADMIN_ROUTES = ["/admin/login", "/admin/forgot-password", "/admin/reset-password"];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -21,12 +26,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [user, setUser] = useState<User | null>(null);
   const [checking, setChecking] = useState(true);
 
+  const isPublicRoute = PUBLIC_ADMIN_ROUTES.some((route) => pathname.startsWith(route));
+
   useEffect(() => {
     // Check auth state on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        // Not logged in — redirect to login (unless already on login page)
-        if (!pathname.startsWith("/admin/login")) {
+        // Not logged in — redirect to login (unless on a public admin route)
+        if (!isPublicRoute) {
           router.replace("/admin/login");
         }
       } else {
@@ -38,22 +45,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     // Subscribe to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
-        router.replace("/admin/login");
+        if (!isPublicRoute) {
+          router.replace("/admin/login");
+        }
       } else {
         setUser(session.user);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [pathname, router]);
+  }, [pathname, router, isPublicRoute]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/admin/login");
   };
 
-  // If on login page, just render it directly (no sidebar wrapper)
-  if (pathname.startsWith("/admin/login")) {
+  // Public admin routes (login + password recovery) render directly, no sidebar wrapper
+  if (isPublicRoute) {
     return <>{children}</>;
   }
 

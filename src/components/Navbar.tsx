@@ -27,6 +27,7 @@ const navigation: NavItem[] = [
     children: [
       { href: "/vendors", label: "Apply to Exhibit" },
       { href: "/vendors/list", label: "Floor Plan & Map" },
+      { href: "/vendors/feed", label: "Business Feed" },
       { href: "/vendors/info", label: "Exhibitor Kit" },
     ],
   },

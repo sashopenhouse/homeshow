@@ -143,6 +143,12 @@ ALTER TABLE vendor_posts ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Approved vendor posts are viewable by everyone"
   ON vendor_posts FOR SELECT USING (status = 'approved');
 
+-- Authenticated admins can read every post (pending/approved/rejected) for moderation.
+-- Policies are OR'd, so this widens visibility for admins without exposing pending
+-- posts to the public.
+CREATE POLICY "Admins can view all vendor posts"
+  ON vendor_posts FOR SELECT USING (auth.role() = 'authenticated');
+
 -- Anyone can submit a post (moderated before going public)
 CREATE POLICY "Anyone can submit a vendor post"
   ON vendor_posts FOR INSERT WITH CHECK (true);

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Users, FileText, Calendar, CheckSquare, ArrowUpRight } from "lucide-react";
+import { Users, FileText, Calendar, CheckSquare, ArrowUpRight, Megaphone } from "lucide-react";
 import Link from "next/link";
 
 interface StatCardProps {
@@ -31,6 +31,7 @@ function StatCard({ title, value, description, icon: Icon, color }: StatCardProp
 export default function AdminOverviewPage() {
   const [totalSignups, setTotalSignups] = useState(0);
   const [totalPosts, setTotalPosts] = useState(0);
+  const [pendingVendorPosts, setPendingVendorPosts] = useState(0);
   const [recentSignups, setRecentSignups] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -64,6 +65,16 @@ export default function AdminOverviewPage() {
 
         if (!postsErr && postsCount !== null) {
           setTotalPosts(postsCount);
+        }
+
+        // Fetch count of vendor posts awaiting moderation
+        const { count: pendingCount, error: pendingErr } = await supabase
+          .from("vendor_posts")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "pending");
+
+        if (!pendingErr && pendingCount !== null) {
+          setPendingVendorPosts(pendingCount);
         }
       } catch (err) {
         console.error("Error fetching admin stats:", err);
@@ -173,6 +184,27 @@ export default function AdminOverviewPage() {
               <div>
                 <h4 className="font-bold text-sm text-foreground">Manage Articles</h4>
                 <span className="text-xs text-muted-foreground">Edit existing publications</span>
+              </div>
+            </Link>
+            <Link
+              href="/admin/vendor-posts"
+              className="relative p-4 border border-border hover:border-primary/40 hover:bg-primary/5 transition-all text-left flex flex-col justify-between h-28"
+            >
+              {!loading && pendingVendorPosts > 0 && (
+                <span className="absolute top-3 right-3 min-w-5 h-5 px-1.5 flex items-center justify-center bg-primary text-white text-xs font-black rounded-none">
+                  {pendingVendorPosts}
+                </span>
+              )}
+              <Megaphone size={20} className="text-primary" />
+              <div>
+                <h4 className="font-bold text-sm text-foreground">Moderate Vendor Feed</h4>
+                <span className="text-xs text-muted-foreground">
+                  {loading
+                    ? "Checking submissions..."
+                    : pendingVendorPosts > 0
+                    ? `${pendingVendorPosts} post${pendingVendorPosts === 1 ? "" : "s"} awaiting review`
+                    : "No posts awaiting review"}
+                </span>
               </div>
             </Link>
           </div>
