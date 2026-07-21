@@ -89,15 +89,20 @@ export default function HomePage() {
     <div ref={container} className="flex-1 flex flex-col min-h-screen relative overflow-hidden bg-background">
       {/* Hero — full bleed image */}
       <section className="relative z-10 w-full min-h-[92vh] flex flex-col justify-end overflow-hidden">
-        {/* Background image */}
+        {/* Background video — falls back to the hero image (poster) until /videos/hero.mp4 exists */}
         <div className="absolute inset-0">
-          <Image
-            src="/hero-floor.png"
-            alt="Home Show exhibition floor at Nexus Center"
-            fill
-            priority
-            className="object-cover object-center"
-          />
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            poster="/hero-floor.png"
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          >
+            <source src="/videos/hero.mp4" type="video/mp4" />
+          </video>
           {/* Layered gradient overlays */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />

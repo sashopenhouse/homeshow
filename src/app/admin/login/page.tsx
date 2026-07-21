@@ -19,16 +19,37 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError("");
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (signInError) {
-      setError("Invalid email or password. Please try again.");
-      setLoading(false);
-    } else {
+      if (signInError) {
+        const code = signInError.code;
+        let msg = signInError.message || "Sign in failed. Please try again.";
+        if (code === "invalid_credentials") {
+          msg = "Invalid email or password. Please try again.";
+        } else if (code === "email_not_confirmed") {
+          msg =
+            "This account's email hasn't been confirmed yet. Confirm it from the Supabase dashboard (Authentication → Users), then sign in.";
+        } else if (
+          signInError.name === "AuthRetryableFetchError" ||
+          /fetch|network|failed to fetch/i.test(msg)
+        ) {
+          msg =
+            "Couldn't reach the authentication server. Check your connection and that the Supabase URL/key are configured.";
+        }
+        setError(msg);
+        setLoading(false);
+        return;
+      }
+
       router.push("/admin");
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError(err?.message || "Unexpected error signing in. Please try again.");
+      setLoading(false);
     }
   };
 

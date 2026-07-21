@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# large video sources — commit the compressed .mp4, never the raw source
+*.mov
+
 # debug
 npm-debug.log*
 yarn-debug.log*
