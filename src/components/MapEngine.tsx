@@ -245,12 +245,12 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
 
   const persistGeometry = async (s: Stall) => {
     try {
-      const coords = JSON.stringify({
+      const coords = {
         x1: Math.round(s.x1),
         y1: Math.round(s.y1),
         x2: Math.round(s.x2),
         y2: Math.round(s.y2)
-      });
+      };
       const q = supabase.from("booths").update({ coordinates: coords, updated_at: new Date().toISOString() });
       const { error } = s.id ? await q.eq("id", s.id) : await q.eq("booth_number", s.number);
       if (error) throw error;
@@ -316,12 +316,12 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
         .insert([
           {
             booth_number: number,
-            coordinates: JSON.stringify({
+            coordinates: {
               x1: Math.round(box.x1),
               y1: Math.round(box.y1),
               x2: Math.round(box.x2),
               y2: Math.round(box.y2)
-            }),
+            },
             floor: RINK2,
             status: "available",
             created_at: new Date().toISOString()
@@ -481,12 +481,12 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
           .insert([
             {
               booth_number: selectedStall.number,
-              coordinates: JSON.stringify({
+              coordinates: {
                 x1: selectedStall.x1,
                 y1: selectedStall.y1,
                 x2: selectedStall.x2,
                 y2: selectedStall.y2
-              }),
+              },
               floor: selectedStall.floor,
               status: hasValue ? "sold" : "available",
               vendor_id: vendorId,
