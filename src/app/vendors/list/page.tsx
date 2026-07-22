@@ -5,6 +5,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { MapPin } from "lucide-react";
+import VendorDirectory from "@/components/VendorDirectory";
 
 const MapEngine = dynamic(() => import("@/components/MapEngine"), {
   ssr: false,
@@ -39,7 +40,7 @@ export default function VendorListPage() {
 
   return (
     <main ref={container} className="flex-1 flex flex-col min-h-screen bg-background pt-32 pb-12 px-6">
-      <div className="max-w-7xl mx-auto w-full flex flex-col h-[calc(100vh-10rem)] min-h-[600px]">
+      <div className="max-w-7xl mx-auto w-full flex flex-col">
         {/* Header */}
         <div className="fade-in-header mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
@@ -57,9 +58,12 @@ export default function VendorListPage() {
         </div>
 
         {/* Interactive Map */}
-        <div className="map-container flex-1 bg-white border border-border shadow-sm relative overflow-hidden flex flex-col">
+        <div className="map-container h-[70vh] min-h-[520px] bg-white border border-border shadow-sm relative overflow-hidden flex flex-col mb-14">
           <MapEngine />
         </div>
+
+        {/* Vendor directory list */}
+        <VendorDirectory />
       </div>
     </main>
   );
