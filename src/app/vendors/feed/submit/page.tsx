@@ -15,12 +15,14 @@ const postTypes = [
 
 export default function SubmitVendorPostPage() {
   const container = useRef<HTMLDivElement>(null);
+  const openedAt = useRef(Date.now()); // used to reject impossibly-fast (bot) submits
 
   const [vendorName, setVendorName] = useState("");
   const [title, setTitle] = useState("");
   const [postType, setPostType] = useState("update");
   const [body, setBody] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [hp, setHp] = useState(""); // honeypot: real users never see or fill this
 
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -38,6 +40,14 @@ export default function SubmitVendorPostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Bot traps: a filled honeypot or an impossibly fast submit — pretend it
+    // worked but silently drop it (no DB write, no moderation-queue spam).
+    if (hp.trim() !== "" || Date.now() - openedAt.current < 2500) {
+      setSubmitted(true);
+      return;
+    }
+
     if (!vendorName.trim() || !title.trim() || !body.trim()) {
       setErrorMsg("Please fill out your business name, a title, and the post content.");
       return;
@@ -78,6 +88,8 @@ export default function SubmitVendorPostPage() {
     setImageUrl("");
     setSubmitted(false);
     setErrorMsg("");
+    setHp("");
+    openedAt.current = Date.now();
   };
 
   return (
@@ -148,6 +160,23 @@ export default function SubmitVendorPostPage() {
               )}
 
               <form className="space-y-6" onSubmit={handleSubmit}>
+                {/* Honeypot — hidden from real users; bots that fill it get dropped */}
+                <div
+                  aria-hidden="true"
+                  style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clipPath: "inset(50%)", whiteSpace: "nowrap" }}
+                >
+                  <label htmlFor="company_url">Company URL</label>
+                  <input
+                    id="company_url"
+                    name="company_url"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={hp}
+                    onChange={(e) => setHp(e.target.value)}
+                  />
+                </div>
+
                 {/* Business Name */}
                 <div>
                   <label className="text-sm font-medium mb-1.5 block text-foreground">
