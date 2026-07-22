@@ -5,7 +5,7 @@ import { MapContainer, Polygon, Marker, Rectangle, useMap } from "react-leaflet"
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { supabase } from "@/lib/supabase";
-import { X, Check, Award, Plus, Trash2, Move } from "lucide-react";
+import { X, Check, Award, Plus, Trash2, Move, ExternalLink } from "lucide-react";
 import { RINK2, RINK3, stallsData, type StallData } from "@/data/boothLayout";
 
 const MAP_H = 1800;
@@ -115,10 +115,11 @@ function MapRefSetter({ mapRef }: { mapRef: React.MutableRefObject<L.Map | null>
 }
 
 export default function MapEngine({ admin = false }: { admin?: boolean }) {
-  const [assignments, setAssignments] = useState<Record<string, { id?: string; vendor_name: string }>>({});
+  const [assignments, setAssignments] = useState<Record<string, { id?: string; vendor_name: string; website_url?: string | null; industry_category?: string | null }>>({});
   const [vendors, setVendors] = useState<{ id: string; company_name: string }[]>([]);
   const [stalls, setStalls] = useState<Stall[]>(stallsData);
   const [selectedNumber, setSelectedNumber] = useState<string | null>(null);
+  const [viewNumber, setViewNumber] = useState<string | null>(null);
   const [selectedVendorId, setSelectedVendorId] = useState<string>("");
   const [vendorInputText, setVendorInputText] = useState<string>("");
   const [numberInput, setNumberInput] = useState<string>("");
@@ -134,6 +135,9 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
 
   // The currently selected booth, derived from the live stalls array by number.
   const selectedStall = selectedNumber ? stalls.find((s) => s.number === selectedNumber) ?? null : null;
+  // Public (non-admin) booth info modal
+  const viewStall = viewNumber ? stalls.find((s) => s.number === viewNumber) ?? null : null;
+  const viewAssignment = viewNumber ? assignments[viewNumber] : undefined;
 
   // Refs give drag handlers the latest state without stale closures.
   const stallsRef = useRef<Stall[]>(stalls);
@@ -157,13 +161,13 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
       // exist (pre-migration), without ever exposing notes publicly.
       const colSets = adminMode
         ? [
-            "id, booth_number, coordinates, floor, vendor_id, status, notes, vendors ( company_name )",
-            "id, booth_number, coordinates, floor, vendor_id, status, vendors ( company_name )",
-            "id, booth_number, coordinates, vendor_id, status, vendors ( company_name )"
+            "id, booth_number, coordinates, floor, vendor_id, status, notes, vendors ( company_name, website_url, industry_category )",
+            "id, booth_number, coordinates, floor, vendor_id, status, vendors ( company_name, website_url, industry_category )",
+            "id, booth_number, coordinates, vendor_id, status, vendors ( company_name, website_url, industry_category )"
           ]
         : [
-            "id, booth_number, coordinates, floor, vendor_id, status, vendors ( company_name )",
-            "id, booth_number, coordinates, vendor_id, status, vendors ( company_name )"
+            "id, booth_number, coordinates, floor, vendor_id, status, vendors ( company_name, website_url, industry_category )",
+            "id, booth_number, coordinates, vendor_id, status, vendors ( company_name, website_url, industry_category )"
           ];
 
       let boothsData: any[] | null = null;
@@ -175,7 +179,7 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
         }
       }
 
-      const loadedAssignments: Record<string, { id?: string; vendor_name: string }> = {};
+      const loadedAssignments: Record<string, { id?: string; vendor_name: string; website_url?: string | null; industry_category?: string | null }> = {};
       const dbStalls: Stall[] = [];
 
       if (boothsData) {
@@ -183,7 +187,9 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
           if (b.vendors?.company_name) {
             loadedAssignments[b.booth_number] = {
               id: b.vendor_id,
-              vendor_name: b.vendors.company_name
+              vendor_name: b.vendors.company_name,
+              website_url: b.vendors.website_url ?? null,
+              industry_category: b.vendors.industry_category ?? null
             };
           }
           const box = parseBbox(b.coordinates);
@@ -662,7 +668,7 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
                         if (adminMode) {
                           handleSelectStall(stall);
                         } else {
-                          alert(`Stall ${stall.number} (${stall.floor})${isAssigned ? `\nOccupied by: ${assignment.vendor_name}` : '\nStatus: Available'}`);
+                          setViewNumber(stall.number);
                         }
                       }
                     }}
@@ -725,6 +731,64 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
                 Showing the built-in default layout — run the booth-layout migration in Supabase to save edits.
               </span>
             )}
+          </div>
+        )}
+
+        {/* Public booth info modal */}
+        {viewStall && (
+          <div
+            className="absolute inset-0 z-[1100] flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm pointer-events-auto animate-in fade-in duration-150"
+            onClick={() => setViewNumber(null)}
+          >
+            <div
+              className="bg-white border border-border shadow-2xl rounded-none w-full max-w-sm relative animate-in zoom-in-95 duration-200"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setViewNumber(null)}
+                className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="p-6">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-none bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary uppercase tracking-widest">
+                  Booth {viewStall.number}
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-1.5">{viewStall.floor || "Nexus Center"}</p>
+
+                {viewAssignment ? (
+                  <div className="mt-4">
+                    <h3 className="text-xl font-black text-foreground leading-tight">{viewAssignment.vendor_name}</h3>
+                    {viewAssignment.industry_category && (
+                      <span className="inline-block mt-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-muted border border-border px-2 py-0.5">
+                        {viewAssignment.industry_category}
+                      </span>
+                    )}
+                    {viewAssignment.website_url && (
+                      <a
+                        href={viewAssignment.website_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-5 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-none bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-all"
+                      >
+                        Visit Website
+                        <ExternalLink size={15} />
+                      </a>
+                    )}
+                  </div>
+                ) : (
+                  <div className="mt-4">
+                    <h3 className="text-xl font-black text-foreground">Available</h3>
+                    <p className="mt-1.5 text-xs text-muted-foreground">This booth is open for the 2027 Home Show.</p>
+                    <a href="/vendors" className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline">
+                      Apply to exhibit →
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
