@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Users, FileText, Calendar, CheckSquare, ArrowUpRight, Megaphone } from "lucide-react";
+import { FileText, Calendar, CheckSquare, ArrowUpRight, Megaphone, Building2 } from "lucide-react";
 import Link from "next/link";
 
 interface StatCardProps {
@@ -29,53 +29,29 @@ function StatCard({ title, value, description, icon: Icon, color }: StatCardProp
 }
 
 export default function AdminOverviewPage() {
-  const [totalSignups, setTotalSignups] = useState(0);
+  const [vendorsCount, setVendorsCount] = useState(0);
+  const [assignedBooths, setAssignedBooths] = useState(0);
+  const [totalBooths, setTotalBooths] = useState(0);
   const [totalPosts, setTotalPosts] = useState(0);
   const [pendingVendorPosts, setPendingVendorPosts] = useState(0);
-  const [recentSignups, setRecentSignups] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchStats() {
       try {
-        // Fetch total vendor applications
-        const { count: signupsCount, error: signupsErr } = await supabase
-          .from("vendor_applications")
-          .select("*", { count: "exact", head: true });
+        const [vendorsRes, assignedRes, boothsRes, postsRes, pendingRes] = await Promise.all([
+          supabase.from("vendors").select("*", { count: "exact", head: true }),
+          supabase.from("booths").select("*", { count: "exact", head: true }).not("vendor_id", "is", null),
+          supabase.from("booths").select("*", { count: "exact", head: true }),
+          supabase.from("posts").select("*", { count: "exact", head: true }),
+          supabase.from("vendor_posts").select("*", { count: "exact", head: true }).eq("status", "pending"),
+        ]);
 
-        if (!signupsErr && signupsCount !== null) {
-          setTotalSignups(signupsCount);
-        }
-
-        // Fetch recent vendor applications
-        const { data: signupsData } = await supabase
-          .from("vendor_applications")
-          .select("id, company_name, contact_name, created_at")
-          .order("created_at", { ascending: false })
-          .limit(3);
-
-        if (signupsData) {
-          setRecentSignups(signupsData);
-        }
-
-        // Fetch total posts
-        const { count: postsCount, error: postsErr } = await supabase
-          .from("posts")
-          .select("*", { count: "exact", head: true });
-
-        if (!postsErr && postsCount !== null) {
-          setTotalPosts(postsCount);
-        }
-
-        // Fetch count of vendor posts awaiting moderation
-        const { count: pendingCount, error: pendingErr } = await supabase
-          .from("vendor_posts")
-          .select("*", { count: "exact", head: true })
-          .eq("status", "pending");
-
-        if (!pendingErr && pendingCount !== null) {
-          setPendingVendorPosts(pendingCount);
-        }
+        if (vendorsRes.count != null) setVendorsCount(vendorsRes.count);
+        if (assignedRes.count != null) setAssignedBooths(assignedRes.count);
+        if (boothsRes.count != null) setTotalBooths(boothsRes.count);
+        if (postsRes.count != null) setTotalPosts(postsRes.count);
+        if (pendingRes.count != null) setPendingVendorPosts(pendingRes.count);
       } catch (err) {
         console.error("Error fetching admin stats:", err);
       } finally {
@@ -97,10 +73,10 @@ export default function AdminOverviewPage() {
       {/* Grid Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          title="Booth Signups"
-          value={loading ? "..." : totalSignups}
-          description="Total online applications"
-          icon={Users}
+          title="Vendors"
+          value={loading ? "..." : vendorsCount}
+          description="Exhibitors in the pool"
+          icon={Building2}
           color="text-primary"
         />
         <StatCard
@@ -119,8 +95,8 @@ export default function AdminOverviewPage() {
         />
         <StatCard
           title="Booths Booked"
-          value="84 / 120"
-          description="70% of floor plan occupied"
+          value={loading ? "..." : `${assignedBooths} / ${totalBooths}`}
+          description="Booths assigned to a vendor"
           icon={CheckSquare}
           color="text-emerald-600"
         />
@@ -128,37 +104,31 @@ export default function AdminOverviewPage() {
 
       {/* Grid details */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Recent Vendor Signups */}
+        {/* Vendor Pool summary */}
         <div className="bg-white border border-border p-6 shadow-sm space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="font-bold text-base text-foreground">Recent Vendor Signups</h3>
+            <h3 className="font-bold text-base text-foreground">Vendor Pool</h3>
             <Link
-              href="/admin/signups"
+              href="/admin/vendors"
               className="text-xs font-bold text-primary flex items-center gap-1 hover:underline"
             >
-              View All Signups
+              Manage Pool
               <ArrowUpRight size={14} />
             </Link>
           </div>
 
-          <div className="divide-y divide-border">
-            {loading ? (
-              <div className="py-4 text-sm text-muted-foreground text-center">Loading signups...</div>
-            ) : recentSignups.length === 0 ? (
-              <div className="py-4 text-sm text-muted-foreground text-center">No applications received yet.</div>
-            ) : (
-              recentSignups.map((signup) => (
-                <div key={signup.id} className="py-4 flex items-center justify-between">
-                  <div>
-                    <h4 className="font-bold text-sm text-foreground">{signup.company_name}</h4>
-                    <span className="text-xs text-muted-foreground">Contact: {signup.contact_name}</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(signup.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-              ))
-            )}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Exhibitors imported</span>
+              <span className="text-2xl font-black text-foreground">{loading ? "..." : vendorsCount}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Assigned to booths</span>
+              <span className="text-2xl font-black text-primary">{loading ? "..." : assignedBooths}</span>
+            </div>
+            <p className="text-xs text-muted-foreground pt-3 border-t border-border">
+              Import exhibitors, then place them on the floor plan from the Booth Map editor.
+            </p>
           </div>
         </div>
 
@@ -177,13 +147,13 @@ export default function AdminOverviewPage() {
               </div>
             </Link>
             <Link
-              href="/admin/posts"
+              href="/admin/booths"
               className="p-4 border border-border hover:border-primary/40 hover:bg-primary/5 transition-all text-left flex flex-col justify-between h-28"
             >
               <CheckSquare size={20} className="text-primary" />
               <div>
-                <h4 className="font-bold text-sm text-foreground">Manage Articles</h4>
-                <span className="text-xs text-muted-foreground">Edit existing publications</span>
+                <h4 className="font-bold text-sm text-foreground">Assign Booths</h4>
+                <span className="text-xs text-muted-foreground">Place vendors on the map</span>
               </div>
             </Link>
             <Link
