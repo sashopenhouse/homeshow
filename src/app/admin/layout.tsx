@@ -5,10 +5,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
-import { LayoutDashboard, FileText, BarChart3, ArrowLeft, Shield, Award, LogOut, Loader2, Megaphone, Map as MapIcon, Building2 } from "lucide-react";
+import { LayoutDashboard, FileText, BarChart3, ArrowLeft, Shield, Award, LogOut, Loader2, Megaphone, Map as MapIcon, Building2, Mail } from "lucide-react";
 
 const adminSidebarLinks = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
+  { href: "/admin/messages", label: "Messages", icon: Mail },
   { href: "/admin/posts", label: "Manage Posts", icon: FileText },
   { href: "/admin/vendor-posts", label: "Vendor Feed", icon: Megaphone },
   { href: "/admin/vendors", label: "Vendor Pool", icon: Building2 },

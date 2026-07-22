@@ -7,7 +7,7 @@ import { Calendar, Ticket, MapPin, Clock, Users } from "lucide-react";
 import Link from "next/link";
 
 const schedule = [
-  { time: "9:00 AM", title: "Doors Open", desc: "Welcome to the 2026 Home Show. Registration and initial vendor walkthrough." },
+  { time: "9:00 AM", title: "Doors Open", desc: "Welcome to the 2027 Home Show. Registration and initial vendor walkthrough." },
   { time: "11:00 AM", title: "Live Entertainment: Music Starts", desc: "Local artists begin their sets on the main stage." },
   { time: "1:00 PM", title: "Grand Prize Giveaway #1", desc: "First major hourly giveaway drawing at the center stage." },
   { time: "2:00 PM", title: "Children's Museum Activities", desc: "Interactive exhibits and face painting open in the kids zone." },
@@ -96,7 +96,7 @@ export default function AttendeesPage() {
                 </li>
                 <li className="flex items-center gap-3 text-sm font-medium">
                   <Calendar className="text-primary" size={18} />
-                  <span>Jan 31 - Feb 1, 2026</span>
+                  <span>Jan 30 - 31, 2027</span>
                 </li>
               </ul>
 

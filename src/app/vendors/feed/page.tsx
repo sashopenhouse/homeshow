@@ -135,7 +135,7 @@ export default function VendorFeedPage() {
             </h1>
             <p className="text-muted-foreground max-w-xl text-base">
               Deals, debuts, and announcements straight from the exhibitors on the floor.
-              See what our vendors are bringing to the 2026 Home Show at Nexus Center.
+              See what our vendors are bringing to the 2027 Home Show at Nexus Center.
             </p>
           </div>
           <div className="flex justify-center shrink-0">

@@ -26,7 +26,7 @@ export default function HomePage() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    const targetDate = new Date("2026-01-31T09:00:00").getTime();
+    const targetDate = new Date("2027-01-30T09:00:00").getTime();
 
     const updateTimer = () => {
       const now = new Date().getTime();
@@ -116,7 +116,7 @@ export default function HomePage() {
             <div className="hero-eyebrow inline-flex items-center gap-2 px-4 py-1.5 rounded-none bg-primary/90 border border-primary mb-6 backdrop-blur-sm">
               <Star size={11} className="text-white fill-white" />
               <span className="text-xs font-bold text-white tracking-widest uppercase">
-                January 31 &amp; February 1, 2026 · Nexus Center
+                January 30 &amp; 31, 2027 · Nexus Center
               </span>
               <Star size={11} className="text-white fill-white" />
             </div>
@@ -187,7 +187,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="mt-4 text-[10px] text-white/40 text-center font-bold uppercase tracking-wider">
-              Jan 31, 2026 @ 9:00 AM EST
+              Jan 30, 2027 @ 9:00 AM EST
             </div>
           </div>
         </div>

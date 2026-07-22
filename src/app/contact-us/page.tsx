@@ -1,13 +1,24 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Send, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabase";
 
 export default function ContactUsPage() {
   const container = useRef<HTMLDivElement>(null);
+  const openedAt = useRef(Date.now());
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [hp, setHp] = useState(""); // honeypot
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
 
   useGSAP(
     () => {
@@ -22,6 +33,43 @@ export default function ContactUsPage() {
     },
     { scope: container }
   );
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Bot traps: filled honeypot or impossibly-fast submit — pretend it worked, drop it.
+    if (hp.trim() !== "" || Date.now() - openedAt.current < 2500) {
+      setSubmitted(true);
+      return;
+    }
+
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      setError("Please fill out your name, email, and message.");
+      return;
+    }
+
+    setSubmitting(true);
+    setError("");
+
+    try {
+      const { error: insErr } = await supabase.from("contact_messages").insert([
+        {
+          name: name.trim(),
+          email: email.trim(),
+          subject: subject.trim() || null,
+          message: message.trim(),
+          created_at: new Date().toISOString(),
+        },
+      ]);
+      if (insErr) throw insErr;
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error("Contact submit error:", err);
+      setError(err?.message || "Something went wrong sending your message. Please try again or email us directly.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <main ref={container} className="flex-1 bg-background py-32 px-6">
@@ -83,50 +131,94 @@ export default function ContactUsPage() {
         {/* Contact Form */}
         <div className="contact-card bg-white border border-border rounded-none p-8 md:p-12 shadow-sm max-w-2xl mx-auto">
           <h2 className="text-2xl font-bold text-foreground mb-6">Send a Message</h2>
-          <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); alert('Message sent!'); }}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+          {submitted ? (
+            <div className="text-center py-8">
+              <div className="w-14 h-14 mx-auto bg-primary/10 border border-primary/20 flex items-center justify-center mb-5">
+                <CheckCircle2 size={28} className="text-primary" />
+              </div>
+              <h3 className="text-lg font-bold text-foreground mb-2">Thanks — your message is on its way</h3>
+              <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                We&apos;ll get back to you at the email you provided. For anything urgent, call us at{" "}
+                <a href="tel:+13157948259" className="text-primary font-semibold">(315) 794-8259</a>.
+              </p>
+            </div>
+          ) : (
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              {error && (
+                <div className="p-3.5 bg-destructive/10 border-l-4 border-destructive text-destructive text-sm rounded-none">
+                  {error}
+                </div>
+              )}
+
+              {/* Honeypot — hidden from real users */}
+              <div
+                aria-hidden="true"
+                style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clipPath: "inset(50%)", whiteSpace: "nowrap" }}
+              >
+                <label htmlFor="company_url">Company URL</label>
+                <input
+                  id="company_url"
+                  name="company_url"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={hp}
+                  onChange={(e) => setHp(e.target.value)}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full p-3 rounded-none border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    placeholder="John Doe"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full p-3 rounded-none border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    placeholder="john@example.com"
+                  />
+                </div>
+              </div>
               <div>
-                <label className="text-sm font-medium mb-1.5 block">Name</label>
+                <label className="text-sm font-medium mb-1.5 block">Subject</label>
                 <input
                   type="text"
-                  required
-                  className="w-full p-3 rounded-none border bg-background text-sm"
-                  placeholder="John Doe"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  className="w-full p-3 rounded-none border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                  placeholder="Exhibitor Inquiry"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1.5 block">Email</label>
-                <input
-                  type="email"
+                <label className="text-sm font-medium mb-1.5 block">Message</label>
+                <textarea
                   required
-                  className="w-full p-3 rounded-none border bg-background text-sm"
-                  placeholder="john@example.com"
+                  rows={5}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className="w-full p-3 rounded-none border bg-background text-sm min-h-[120px] focus:outline-none focus:ring-1 focus:ring-primary"
+                  placeholder="Tell us what you're looking for..."
                 />
               </div>
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-1.5 block">Subject</label>
-              <input
-                type="text"
-                required
-                className="w-full p-3 rounded-none border bg-background text-sm"
-                placeholder="Exhibitor Inquiry"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-1.5 block">Message</label>
-              <textarea
-                required
-                rows={5}
-                className="w-full p-3 rounded-none border bg-background text-sm min-h-[120px]"
-                placeholder="Tell us what you're looking for..."
-              />
-            </div>
-            <Button type="submit" className="w-full rounded-none flex items-center justify-center gap-2">
-              <Send size={16} />
-              Send Message
-            </Button>
-          </form>
+              <Button type="submit" disabled={submitting} className="w-full rounded-none flex items-center justify-center gap-2">
+                <Send size={16} />
+                {submitting ? "Sending..." : "Send Message"}
+              </Button>
+            </form>
+          )}
         </div>
 
         {/* Location Map */}
