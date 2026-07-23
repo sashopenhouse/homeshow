@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
@@ -80,13 +81,15 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-none bg-primary/15 border border-primary/30 flex items-center justify-center transition-all group-hover:scale-105 group-hover:bg-primary/20">
-              <span className="text-primary font-black text-sm">HS</span>
-            </div>
-            <span className="font-bold text-foreground tracking-tight">
-              Home Show <span className="text-primary">Nexus</span>
-            </span>
+          <Link href="/" className="flex items-center group">
+            <Image
+              src="/logo.png"
+              alt="The Home Show at Utica University Nexus Center"
+              width={427}
+              height={80}
+              priority
+              className="h-9 w-auto transition-transform group-hover:scale-[1.03]"
+            />
           </Link>
 
           {/* Desktop Links */}
