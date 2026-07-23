@@ -5,7 +5,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import Link from "next/link";
 import Image from "next/image";
-import { Ticket, Building2, Map, Home, TreePine, Music, Gift, Star } from "lucide-react";
+import { Ticket, Building2, Map, Home, TreePine, Music, Gift, Star, ArrowRight } from "lucide-react";
 
 const highlights = [
   { icon: TreePine, title: "Zoomobile", desc: "Live exotic animals & interactive wildlife exhibits for the whole family." },
@@ -253,23 +253,37 @@ export default function HomePage() {
               Don't miss your chance to win incredible prizes throughout the weekend!
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="relative w-full aspect-[21/9] bg-muted overflow-hidden group border border-border/50">
-              <Image 
-                src="/giveaways/giveaway-25k-banner.png" 
-                alt="$25,000 Giveaway" 
-                fill 
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-              />
+          {/* $25,000 Giveaway — full-width banner linking to New York Sash */}
+          <a
+            href="https://www.newyorksash.com/win"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Enter the $25,000 New York Sash giveaway"
+            className="group relative block w-full aspect-[9000/1640] bg-muted overflow-hidden border border-border/50 mb-8"
+          >
+            <Image
+              src="/giveaways/giveaway-25k-banner.png"
+              alt="Win a $25,000 giveaway from New York Sash"
+              fill
+              sizes="100vw"
+              className="object-contain group-hover:scale-[1.02] transition-transform duration-500"
+            />
+            <div className="absolute inset-0 flex items-end justify-end p-3 sm:p-4 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-xs sm:text-sm font-bold rounded-none shadow-lg">
+                Enter to Win <ArrowRight size={15} />
+              </span>
             </div>
-            <div className="relative w-full aspect-[21/9] bg-muted overflow-hidden group border border-border/50">
-              <Image 
-                src="/giveaways/tasting-giveaway-banner.png" 
-                alt="Food & Beverage Tasting Giveaway" 
-                fill 
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
+          </a>
+
+          {/* Tasting Giveaway */}
+          <div className="relative w-full max-w-3xl mx-auto aspect-[1200/630] bg-muted overflow-hidden border border-border/50">
+            <Image
+              src="/giveaways/tasting-giveaway-banner.png"
+              alt="Food & Beverage Tasting Giveaway"
+              fill
+              sizes="(max-width: 768px) 100vw, 768px"
+              className="object-contain"
+            />
           </div>
         </div>
       </section>
