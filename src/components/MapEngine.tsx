@@ -16,22 +16,41 @@ const MIN_SIZE = 24; // minimum booth width/height in design units
 // and optional internal admin notes.
 type Stall = StallData & { id?: string; notes?: string };
 
+// Non-booth areas drawn on the plan. `tone` picks the palette: "green" for
+// show floor amenities, "blue" for the passport drop-off.
 const zonesData = [
-  { name: 'KID\'S ZONE (177-179)', x1: 65, y1: 520, x2: 145, y2: 750, floor: RINK2 },
-  { name: 'CONCESSIONS & ENTERTAINMENT', x1: 955, y1: 920, x2: 1337, y2: 995, floor: RINK2 },
-  { name: 'NEW YORK SASH & GIVEAWAY AREA', x1: 1212, y1: 1470, x2: 1440, y2: 1625, floor: RINK3 }
-];
+  { name: 'CONCESSIONS & ENTERTAINMENT', x1: 1042, y1: 870, x2: 1401, y2: 931, tone: 'green' },
+  { name: 'NEW YORK SASH & GIVEAWAY AREA', x1: 1139, y1: 1382, x2: 1354, y2: 1523, tone: 'green' },
+  { name: 'PASSPORT DROP-OFF', x1: 1603, y1: 365, x2: 1692, y2: 412, tone: 'blue' },
+  { name: 'REST ROOMS', x1: 1626, y1: 442, x2: 1692, y2: 509, tone: 'green' }
+] as const;
 
-const labelsData = [
-  { text: 'GROUND LEVEL – RINK 2', x: 800, y: 330, size: 20 },
-  { text: 'GROUND LEVEL – RINK 3', x: 800, y: 1090, size: 20 },
-  { text: 'TASTING AREA', x: 330, y: 680, size: 17 },
-  { text: 'WALKWAY', x: 462, y: 1050, size: 13 },
-  { text: '– ORISKANY STREET W –', x: 800, y: 1790, size: 18 },
-  { text: 'ENTER / EXIT', x: 1660, y: 330, size: 12 },
-  { text: 'ENTER / EXIT', x: 1660, y: 1440, size: 12 },
-  { text: 'REST ROOMS', x: 1660, y: 500, size: 10 },
-  { text: '– BROADWAY –', x: 1685, y: 960, size: 14 }
+const ZONE_TONES = {
+  green: { color: '#7ba05b', fillColor: '#c9e4b4', text: '#2d5a2d' },
+  blue: { color: '#4a90c2', fillColor: '#aed9f5', text: '#14425e' }
+} as const;
+
+// Static plan annotations. `w` widens the label's icon box for long strings so
+// the text stays centred on its anchor instead of overflowing to one side.
+interface PlanLabel {
+  text: string;
+  x: number;
+  y: number;
+  size: number;
+  color?: string;
+  italic?: boolean;
+  w?: number;
+}
+
+const labelsData: PlanLabel[] = [
+  { text: 'GROUND LEVEL – RINK 2', x: 870, y: 306, size: 20 },
+  { text: 'GROUND LEVEL – RINK 3', x: 870, y: 978, size: 20 },
+  { text: 'VENDORS IN RINK 3 MUST BE BROKEN DOWN BY SUNDAY NIGHT!', x: 870, y: 1011, size: 14, color: '#cc0000', italic: true, w: 760 },
+  { text: 'TASTING AREA', x: 310, y: 642, size: 17 },
+  { text: '– ORISKANY STREET W –', x: 870, y: 1746, size: 18 },
+  { text: '↓ ENTER / EXIT ↑', x: 1642, y: 303, size: 12 },
+  { text: '→ ENTER / EXIT ←', x: 1642, y: 1356, size: 12 },
+  { text: '– BROADWAY –', x: 1730, y: 902, size: 14 }
 ];
 
 // Editing handles (created once, client-side)
@@ -56,7 +75,7 @@ const cornerIconNESW = L.divIcon({
 
 // Helper to generate rounded rink outlines
 function getRinkOutlinePoints(x1: number, y1: number, x2: number, y2: number) {
-  const r = 90;
+  const r = 75;
   const pts: [number, number][] = [];
   const seg = 10;
   const cs: [number, number, number, number][] = [
@@ -569,28 +588,29 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
 
             {/* Draw Rink Outlines */}
             <Polygon
-              positions={getRinkOutlinePoints(55, 345, 1500, 1015)}
+              positions={getRinkOutlinePoints(52, 324, 1485, 940)}
               pathOptions={{ color: '#111111', weight: 4.5, fill: false, interactive: false }}
             />
             <Polygon
-              positions={getRinkOutlinePoints(50, 1100, 1505, 1750)}
+              positions={getRinkOutlinePoints(52, 1039, 1485, 1683)}
               pathOptions={{ color: '#111111', weight: 4.5, fill: false, interactive: false }}
             />
 
             {/* Walkway Connector between rinks */}
             <Polygon
-              positions={[[yy(1015), 430], [yy(1015), 500], [yy(1100), 470], [yy(1100), 400]]}
+              positions={[[yy(940), 406], [yy(940), 470], [yy(1039), 440], [yy(1039), 376]]}
               pathOptions={{ color: '#111111', weight: 3, fillColor: '#ffffff', fillOpacity: 1, interactive: false }}
             />
 
             {/* Static Annotations & Labels */}
             {labelsData.map((label, index) => {
               const rotateStyle = label.text.includes('BROADWAY') ? 'transform:rotate(90deg);' : '';
+              const w = label.w ?? 300;
               const labelIcon = L.divIcon({
                 className: 'static-label-icon',
-                html: `<div style="font-size:${label.size}px;font-weight:bold;color:#111;letter-spacing:1px;white-space:nowrap;${rotateStyle} font-family:sans-serif;">${label.text}</div>`,
-                iconSize: [300, 30],
-                iconAnchor: [150, 15]
+                html: `<div style="font-size:${label.size}px;font-weight:bold;color:${label.color ?? '#111'};${label.italic ? 'font-style:italic;' : ''}letter-spacing:1px;white-space:nowrap;text-align:center;${rotateStyle} font-family:sans-serif;">${label.text}</div>`,
+                iconSize: [w, 30],
+                iconAnchor: [w / 2, 15]
               });
               return (
                 <Marker key={`label-${index}`} position={[yy(label.y), label.x]} icon={labelIcon} interactive={false} />
@@ -599,7 +619,7 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
 
             {/* Walkway Text Label */}
             <Marker
-              position={[yy(1057), 455]}
+              position={[yy(990), 428]}
               icon={L.divIcon({
                 className: 'walkway-label-icon',
                 html: '<div style="font-size:11px;transform:rotate(-72deg);font-weight:bold;color:#111;letter-spacing:1px;white-space:nowrap;font-family:sans-serif;">WALKWAY</div>',
@@ -610,24 +630,27 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
             />
 
             {/* Event Zones */}
-            {zonesData.map((zone, index) => (
-              <span key={`zone-group-${index}`}>
-                <Rectangle
-                  bounds={[[yy(zone.y2), zone.x1], [yy(zone.y1), zone.x2]]}
-                  pathOptions={{ color: '#7ba05b', weight: 1.5, fillColor: '#c9e4b4', fillOpacity: 0.9, interactive: false }}
-                />
-                <Marker
-                  position={[yy((zone.y1 + zone.y2) / 2), (zone.x1 + zone.x2) / 2]}
-                  icon={L.divIcon({
-                    className: 'zone-label-icon',
-                    html: `<div style="font-size:10px;font-weight:bold;color:#2d5a2d;text-align:center;font-family:sans-serif;line-height:1.2;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">${zone.name}</div>`,
-                    iconSize: [(zone.x2 - zone.x1), 40],
-                    iconAnchor: [(zone.x2 - zone.x1) / 2, 20]
-                  })}
-                  interactive={false}
-                />
-              </span>
-            ))}
+            {zonesData.map((zone, index) => {
+              const tone = ZONE_TONES[zone.tone];
+              return (
+                <span key={`zone-group-${index}`}>
+                  <Rectangle
+                    bounds={[[yy(zone.y2), zone.x1], [yy(zone.y1), zone.x2]]}
+                    pathOptions={{ color: tone.color, weight: 1.5, fillColor: tone.fillColor, fillOpacity: 0.9, interactive: false }}
+                  />
+                  <Marker
+                    position={[yy((zone.y1 + zone.y2) / 2), (zone.x1 + zone.x2) / 2]}
+                    icon={L.divIcon({
+                      className: 'zone-label-icon',
+                      html: `<div style="font-size:10px;font-weight:bold;color:${tone.text};text-align:center;font-family:sans-serif;line-height:1.2;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">${zone.name}</div>`,
+                      iconSize: [(zone.x2 - zone.x1), 40],
+                      iconAnchor: [(zone.x2 - zone.x1) / 2, 20]
+                    })}
+                    interactive={false}
+                  />
+                </span>
+              );
+            })}
 
             {/* Render Stalls */}
             {stalls.map((stall) => {
