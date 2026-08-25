@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MapContainer, Polygon, Marker, Rectangle, useMap } from "react-leaflet";
+import { MapContainer, Polygon, Marker, Rectangle, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { supabase } from "@/lib/supabase";
@@ -124,12 +124,24 @@ function clampBox(b: { x1: number; y1: number; x2: number; y2: number }) {
   return { x1: cx(b.x1), y1: cy(b.y1), x2: cx(b.x2), y2: cy(b.y2) };
 }
 
-// Captures the Leaflet map instance so we can place new booths at the current view center.
-function MapRefSetter({ mapRef }: { mapRef: React.MutableRefObject<L.Map | null> }) {
+// Captures the Leaflet map instance so we can place new booths at the current
+// view center, and reports the live zoom so labels can be sized in design units
+// rather than fixed screen pixels (divIcons don't scale with the map on their own).
+function MapRefSetter({
+  mapRef,
+  onZoom
+}: {
+  mapRef: React.MutableRefObject<L.Map | null>;
+  onZoom: (z: number) => void;
+}) {
   const map = useMap();
   useEffect(() => {
     mapRef.current = map;
-  }, [map, mapRef]);
+    onZoom(map.getZoom());
+  }, [map, mapRef, onZoom]);
+  // zoomend only — resizing 185 labels on every animation frame would stutter,
+  // and Leaflet already scales the panes smoothly during the zoom itself.
+  useMapEvents({ zoomend: () => onZoom(map.getZoom()) });
   return null;
 }
 
@@ -146,6 +158,10 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dbBacked, setDbBacked] = useState(false);
+  // Live map zoom. In CRS.Simple one design unit is 2^zoom screen pixels, so
+  // `k` converts booth geometry into the on-screen size its label must fit.
+  const [zoom, setZoom] = useState(-1.5);
+  const k = Math.pow(2, zoom);
 
   // Editing is driven by the `admin` prop: /admin/booths passes admin (editing on),
   // the public floor plan renders it without the prop (view-only). Writes are also
@@ -568,7 +584,9 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
   return (
     <div className="relative w-full h-full flex flex-col font-sans select-none">
       {/* Interactive Map Layout Container */}
-      <div className="flex-1 min-h-[600px] h-[750px] relative">
+      {/* Fills whatever height the page gives it — a fixed height here would be
+          clipped by the shorter public wrapper (h-[70vh]). */}
+      <div className="flex-1 relative">
         {loading ? (
           <div className="absolute inset-0 bg-muted/10 flex items-center justify-center text-muted-foreground text-sm font-bold">
             Initializing Vector Map Layout...
@@ -577,14 +595,17 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
           <MapContainer
             crs={L.CRS.Simple}
             bounds={bounds}
-            minZoom={-1.5}
-            maxZoom={1}
-            zoom={-0.5}
-            center={[yy(900), 875]}
+            boundsOptions={{ padding: [16, 16] }}
+            // zoomSnap 0.1 lets the initial fit land on the zoom that actually
+            // shows the whole plan instead of snapping a whole level past it.
+            zoomSnap={0.1}
+            zoomDelta={0.5}
+            minZoom={-3}
+            maxZoom={1.5}
             style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, background: "#ffffff" }}
             className="z-0 border border-border"
           >
-            <MapRefSetter mapRef={mapRef} />
+            <MapRefSetter mapRef={mapRef} onZoom={setZoom} />
 
             {/* Draw Rink Outlines */}
             <Polygon
@@ -606,9 +627,14 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
             {labelsData.map((label, index) => {
               const rotateStyle = label.text.includes('BROADWAY') ? 'transform:rotate(90deg);' : '';
               const w = label.w ?? 300;
+              // Scale with the map, but never below 9px — annotations stay
+              // readable when the whole plan is fitted to a small container.
+              // Flex centring keeps long text centred on its anchor even when
+              // it overflows the icon box.
+              const fs = Math.max(9, Math.round(label.size * k * 1.6));
               const labelIcon = L.divIcon({
                 className: 'static-label-icon',
-                html: `<div style="font-size:${label.size}px;font-weight:bold;color:${label.color ?? '#111'};${label.italic ? 'font-style:italic;' : ''}letter-spacing:1px;white-space:nowrap;text-align:center;${rotateStyle} font-family:sans-serif;">${label.text}</div>`,
+                html: `<div style="font-size:${fs}px;font-weight:bold;color:${label.color ?? '#111'};${label.italic ? 'font-style:italic;' : ''}letter-spacing:1px;white-space:nowrap;${rotateStyle} font-family:sans-serif;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">${label.text}</div>`,
                 iconSize: [w, 30],
                 iconAnchor: [w / 2, 15]
               });
@@ -622,7 +648,7 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
               position={[yy(990), 428]}
               icon={L.divIcon({
                 className: 'walkway-label-icon',
-                html: '<div style="font-size:11px;transform:rotate(-72deg);font-weight:bold;color:#111;letter-spacing:1px;white-space:nowrap;font-family:sans-serif;">WALKWAY</div>',
+                html: `<div style="font-size:${Math.max(8, Math.round(11 * k * 1.6))}px;transform:rotate(-72deg);font-weight:bold;color:#111;letter-spacing:1px;white-space:nowrap;font-family:sans-serif;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">WALKWAY</div>`,
                 iconSize: [80, 16],
                 iconAnchor: [40, 8]
               })}
@@ -642,9 +668,9 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
                     position={[yy((zone.y1 + zone.y2) / 2), (zone.x1 + zone.x2) / 2]}
                     icon={L.divIcon({
                       className: 'zone-label-icon',
-                      html: `<div style="font-size:10px;font-weight:bold;color:${tone.text};text-align:center;font-family:sans-serif;line-height:1.2;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">${zone.name}</div>`,
-                      iconSize: [(zone.x2 - zone.x1), 40],
-                      iconAnchor: [(zone.x2 - zone.x1) / 2, 20]
+                      html: `<div style="font-size:${Math.max(7, Math.round(10 * k * 1.6))}px;font-weight:bold;color:${tone.text};text-align:center;font-family:sans-serif;line-height:1.15;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;">${zone.name}</div>`,
+                      iconSize: [(zone.x2 - zone.x1) * k, (zone.y2 - zone.y1) * k],
+                      iconAnchor: [((zone.x2 - zone.x1) * k) / 2, ((zone.y2 - zone.y1) * k) / 2]
                     })}
                     interactive={false}
                   />
@@ -661,18 +687,24 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
               const color = isCurrentSelect ? '#003d7a' : (isAssigned ? '#3d8b3d' : '#4a90c2');
               const fillColor = isCurrentSelect ? '#0066cc' : (isAssigned ? '#8fd18f' : '#aed9f5');
 
-              const w = stall.x2 - stall.x1;
-              const h = stall.y2 - stall.y1;
-              const fs = Math.max(10, Math.min(15, Math.floor(Math.min(w, h) / 3.8)));
+              // Booth size on screen. The label box matches it exactly so text
+              // can never spill onto a neighbouring booth, and both shrink and
+              // grow with the map instead of staying a fixed pixel size.
+              const bw = (stall.x2 - stall.x1) * k;
+              const bh = (stall.y2 - stall.y1) * k;
+              const fs = Math.max(7, Math.min(16, Math.floor(Math.min(bw / 2.6, bh / 2.4))));
+              // Below these sizes there is no room to render text legibly.
+              const showNumber = bw >= 16 && bh >= 11;
+              const showVendor = isAssigned && bw >= 58 && bh >= 34;
 
               const labelIcon = L.divIcon({
                 className: 'stall-label-icon',
-                html: `<div style="font-weight:bold;color:${isCurrentSelect ? '#ffffff' : '#1a1a1a'};text-align:center;line-height:1.15;font-size:${fs}px;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;font-family:sans-serif;white-space:normal;">
-                  <span>${stall.number}</span>
-                  ${isAssigned ? `<span style="font-weight:normal;font-size:9px;color:#2d2d2d;margin-top:2.5px;max-width:${w - 6}px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${assignment.vendor_name}</span>` : ''}
+                html: `<div style="font-weight:bold;color:${isCurrentSelect ? '#ffffff' : '#1a1a1a'};text-align:center;line-height:1.1;font-size:${fs}px;display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;height:100%;overflow:hidden;font-family:sans-serif;white-space:normal;">
+                  ${showNumber ? `<span>${stall.number}</span>` : ''}
+                  ${showVendor ? `<span style="font-weight:normal;font-size:${Math.max(7, Math.round(fs * 0.68))}px;color:#2d2d2d;margin-top:2px;max-width:${bw - 6}px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${assignment.vendor_name}</span>` : ''}
                 </div>`,
-                iconSize: [w, h],
-                iconAnchor: [w / 2, h / 2]
+                iconSize: [bw, bh],
+                iconAnchor: [bw / 2, bh / 2]
               });
 
               return (

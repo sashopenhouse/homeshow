@@ -58,9 +58,12 @@ export default function VendorListPage() {
         </div>
 
         {/* Interactive Map */}
-        <div className="map-container h-[70vh] min-h-[520px] bg-white border border-border shadow-sm relative overflow-hidden flex flex-col mb-14">
+        <div className="map-container h-[80vh] min-h-[560px] bg-white border border-border shadow-sm relative overflow-hidden flex flex-col">
           <MapEngine />
         </div>
+        <p className="text-[11px] text-muted-foreground mt-2 mb-14">
+          Scroll or pinch to zoom in — booth numbers and vendor names sharpen as you get closer.
+        </p>
 
         {/* Vendor directory list */}
         <VendorDirectory />
