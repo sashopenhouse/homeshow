@@ -109,26 +109,30 @@ export default function Navbar() {
                       {item.label}
                       <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-300" />
                     </button>
-                    {/* Dropdown Card */}
-                    <div className="absolute top-full left-0 mt-1 w-52 bg-white/95 backdrop-blur-xl border border-border shadow-lg rounded-none p-2 hidden group-hover:block animate-in fade-in slide-in-from-top-2 duration-200">
-                      {item.children.map((child) => {
-                        const isExternal = child.href.startsWith("http");
-                        return (
-                          <Link
-                            key={child.href}
-                            href={child.href}
-                            target={isExternal ? "_blank" : undefined}
-                            rel={isExternal ? "noopener noreferrer" : undefined}
-                            className={`block px-4 py-2.5 rounded-none text-sm font-medium transition-all ${
-                              pathname === child.href
-                                ? "bg-primary/10 text-primary"
-                                : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                            }`}
-                          >
-                            {child.label}
-                          </Link>
-                        );
-                      })}
+                    {/* Dropdown Card — the pt-1 wrapper (not a margin) keeps the hover
+                        target continuous from the button down through the visual gap,
+                        so crossing that gap doesn't drop group-hover and close the menu. */}
+                    <div className="absolute top-full left-0 pt-1 w-52 hidden group-hover:block">
+                      <div className="bg-white/95 backdrop-blur-xl border border-border shadow-lg rounded-none p-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                        {item.children.map((child) => {
+                          const isExternal = child.href.startsWith("http");
+                          return (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              target={isExternal ? "_blank" : undefined}
+                              rel={isExternal ? "noopener noreferrer" : undefined}
+                              className={`block px-4 py-2.5 rounded-none text-sm font-medium transition-all ${
+                                pathname === child.href
+                                  ? "bg-primary/10 text-primary"
+                                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                              }`}
+                            >
+                              {child.label}
+                            </Link>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 );
