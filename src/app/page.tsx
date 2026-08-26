@@ -214,7 +214,7 @@ export default function HomePage() {
       <section className="relative z-10 max-w-7xl mx-auto px-6 py-16 w-full">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground mb-3">
-            Something for <span className="text-gold">Everyone</span>
+            Something for <span className="text-gold italic">Everyone</span>
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
             More than just a home show — a full spring weekend experience.
@@ -247,7 +247,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6 w-full">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground mb-3">
-              Exciting <span className="text-primary">Giveaways</span>
+              Exciting <span className="text-primary italic">Giveaways</span>
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
               Don't miss your chance to win incredible prizes throughout the weekend!

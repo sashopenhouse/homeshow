@@ -103,7 +103,7 @@ export default function SponsorsPage() {
             Our Partners
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground mb-4">
-            Home Show <span className="text-primary">Sponsors</span>
+            Home Show <span className="text-primary italic">Sponsors</span>
           </h1>
           <p className="text-muted-foreground max-w-xl mx-auto text-base">
             Sponsors play a major role in allowing the Home Show to take place. Thank you so much to our amazing partners!

@@ -45,7 +45,7 @@ export default function VendorApplicationPage() {
             Join the Show
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground mb-4">
-            Become a <span className="text-primary">Vendor</span>
+            Become a <span className="text-primary italic">Vendor</span>
           </h1>
           <p className="text-muted-foreground max-w-xl mx-auto text-base">
             Exhibit at the region&apos;s premier spring Home Show — April 24–25, 2027 at the Utica University

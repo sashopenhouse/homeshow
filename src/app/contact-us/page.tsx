@@ -81,7 +81,7 @@ export default function ContactUsPage() {
             Contact Info
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground mb-4">
-            Get in <span className="text-primary">Touch</span>
+            Get in <span className="text-primary italic">Touch</span>
           </h1>
           <p className="text-muted-foreground max-w-xl mx-auto text-base">
             Have questions about the upcoming Home Show, tickets, or booking a booth? Drop us a line.

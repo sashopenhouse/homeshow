@@ -84,7 +84,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex flex-col md:flex-row text-foreground font-sans">
+    <div className="admin-shell min-h-screen bg-[#fafafa] flex flex-col md:flex-row text-foreground font-sans">
       {/* Admin Sidebar */}
       <aside className="w-full md:w-64 bg-white border-b md:border-b-0 md:border-r border-border shrink-0 flex flex-col justify-between">
         <div>

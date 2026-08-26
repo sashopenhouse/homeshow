@@ -75,7 +75,7 @@ export default function AttendeesPage() {
             Attendee Hub
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground mb-4">
-            Plan Your <span className="text-primary">Visit</span>
+            Plan Your <span className="text-primary italic">Visit</span>
           </h1>
           <p className="text-muted-foreground max-w-xl mx-auto text-base">
             Everything you need for an amazing spring weekend. Buy your tickets, review each day&apos;s schedule, and prepare for a home show like no other.

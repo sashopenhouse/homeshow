@@ -116,7 +116,7 @@ export default function NewsPage() {
               Show News
             </div>
             <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground mb-4">
-              Latest <span className="text-primary">Happenings</span>
+              Latest <span className="text-primary italic">Happenings</span>
             </h1>
             <p className="text-muted-foreground max-w-xl text-base">
               Stay up to date with the latest news, announcements, and scheduling details for the Home Show at Nexus Center.
