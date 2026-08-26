@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { Calendar, User, ArrowRight, Rss, Plus } from "lucide-react";
+import { Calendar, User, Rss } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
@@ -109,28 +109,17 @@ export default function NewsPage() {
     <main ref={container} className="flex-1 bg-background py-32 px-6">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="fade-in-header flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
-          <div className="text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-none bg-primary/10 border border-primary/20 text-xs font-semibold text-primary uppercase tracking-wider mb-4">
-              <Rss size={14} />
-              Show News
-            </div>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground mb-4">
-              Latest <span className="text-primary italic">Happenings</span>
-            </h1>
-            <p className="text-muted-foreground max-w-xl text-base">
-              Stay up to date with the latest news, announcements, and scheduling details for the Home Show at Nexus Center.
-            </p>
+        <div className="fade-in-header text-center md:text-left mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-none bg-primary/10 border border-primary/20 text-xs font-semibold text-primary uppercase tracking-wider mb-4">
+            <Rss size={14} />
+            Show News
           </div>
-          <div className="flex justify-center shrink-0">
-            <Link
-              href="/news/create"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-none bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-all hover:scale-105 active:scale-95"
-            >
-              <Plus size={16} />
-              Create Post
-            </Link>
-          </div>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground mb-4">
+            Latest <span className="text-primary italic">Happenings</span>
+          </h1>
+          <p className="text-muted-foreground max-w-xl text-base">
+            Stay up to date with the latest news, announcements, and scheduling details for the Home Show at Nexus Center.
+          </p>
         </div>
 
         {loading ? (
