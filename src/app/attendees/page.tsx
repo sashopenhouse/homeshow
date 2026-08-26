@@ -22,14 +22,14 @@ const days = [
   {
     label: "Sunday",
     date: "April 25, 2027",
-    hours: "10:00 AM – 5:00 PM",
+    hours: "9:00 AM – 4:00 PM",
     events: [
-      { time: "10:00 AM", title: "Doors Open", desc: "Day two of the 2027 Home Show kicks off." },
-      { time: "12:00 PM", title: "Live Music Returns", desc: "More performances from local artists on the main stage." },
-      { time: "1:00 PM", title: "Exhibitor Demos", desc: "Hands-on demonstrations from home improvement experts across the floor." },
-      { time: "2:30 PM", title: "$25,000 Grand Prize Drawing", desc: "The big giveaway drawing — must be present to win." },
-      { time: "4:00 PM", title: "Final Giveaways", desc: "Last round of door prizes and vendor raffles." },
-      { time: "5:00 PM", title: "Show Concludes", desc: "Doors close for the 2027 Home Show. Thanks for coming!" },
+      { time: "9:00 AM", title: "Doors Open", desc: "Day two of the 2027 Home Show kicks off." },
+      { time: "11:00 AM", title: "Live Music Returns", desc: "More performances from local artists on the main stage." },
+      { time: "12:00 PM", title: "Exhibitor Demos", desc: "Hands-on demonstrations from home improvement experts across the floor." },
+      { time: "1:30 PM", title: "$25,000 Grand Prize Drawing", desc: "The big giveaway drawing — must be present to win." },
+      { time: "3:00 PM", title: "Final Giveaways", desc: "Last round of door prizes and vendor raffles." },
+      { time: "4:00 PM", title: "Show Concludes", desc: "Doors close for the 2027 Home Show. Thanks for coming!" },
     ],
   },
 ];

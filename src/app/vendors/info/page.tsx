@@ -3,30 +3,46 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { Package, Truck, Plug, FileText, AlertCircle, Clock } from "lucide-react";
+import { Package, Truck, Plug, FileText, AlertCircle, ExternalLink, DollarSign } from "lucide-react";
 import Link from "next/link";
+
+const REGFOX_APPLY_URL = "https://kesslerpromotionsinc.regfox.com/2027-home-show-nexus-center-";
 
 const infoSections = [
   {
     title: "Load-In & Setup",
     icon: Truck,
-    content: "All exhibitors must load in on Thursday, Apr 22nd (8am - 6pm) or Friday, Apr 23rd (8am - 4pm). No load-ins will be permitted on Saturday morning. Large vehicles must schedule a dock time."
+    content: "Setup is Friday, April 23 (9am – 7pm) or Saturday, April 24 morning (7am – 8:30am sharp, before doors open at 9am). Booths must be ready before the show opens — no load-ins once doors are open."
   },
   {
     title: "Booth Guidelines",
     icon: Package,
-    content: "Standard booths are 10x10. Tents and canopies are not permitted indoors due to fire code. Displays must not block the sightlines of neighboring booths."
+    content: "Standard booths are 10x10, with a 10x20 end cap option available. Loading doors are 9ft high by 8.5ft wide. Displays must stay within your assigned booth space."
   },
   {
     title: "Power & Utilities",
     icon: Plug,
-    content: "Basic 110v electrical hookups are provided if requested on the application. Exhibitors must bring their own heavy-duty extension cords and power strips."
+    content: "Electricity is available as an add-on during registration — duplex or 220 outlets. Bring your own heavy-duty extension cords and power strips."
   },
   {
     title: "Required Documents",
     icon: FileText,
-    content: "A valid Certificate of Insurance (COI) naming Kessler Promotions and Nexus Center as additional insured must be submitted by April 9th, 2027."
+    content: "A Certificate of Insurance ($1M per occurrence / $2M aggregate) naming Kessler Promotions, the Nexus Center, and Garden Entertainment as additional insured is due by Friday, April 2, 2027."
   }
+];
+
+const boothOptions = [
+  { size: "10' x 10'", price: "$995", note: "Standard booth" },
+  { size: "10' x 20'", price: "$1,895", note: "End cap — premium positioning" },
+  { size: "Tasting Booth", price: "$395", note: "Food & beverage tasting vendors" },
+  { size: "Non-Profit", price: "$395", note: "Registered non-profit organizations" }
+];
+
+const addOns = [
+  { label: "Duplex electrical outlet", price: "$50" },
+  { label: "220v electrical outlet", price: "$175" },
+  { label: "Furnishings (8' table + chairs)", price: "$40" },
+  { label: "Vendor spotlight feature", price: "$100" }
 ];
 
 export default function VendorInfoPage() {
@@ -85,18 +101,63 @@ export default function VendorInfoPage() {
           })}
         </div>
 
+        {/* Booth Pricing */}
+        <div className="mb-16">
+          <div className="flex items-center gap-2 mb-6">
+            <DollarSign size={20} className="text-primary" />
+            <h2 className="text-2xl font-bold text-foreground">Booth Pricing</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            {boothOptions.map((b) => (
+              <div key={b.size} className="info-card bg-white border border-border rounded-none p-6 shadow-sm">
+                <span className="text-2xl font-black text-primary">{b.price}</span>
+                <h3 className="font-bold text-foreground text-sm mt-2">{b.size}</h3>
+                <p className="text-muted-foreground text-xs mt-1 leading-relaxed">{b.note}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Prices exclude processing fees. A $100 nonrefundable deposit per booth is due at application —
+            pay in full by January 1 for a $200 discount. Remaining balance is due March 26, 2027.
+          </p>
+        </div>
+
+        {/* Add-Ons */}
+        <div className="mb-16">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Add-Ons</h2>
+          <div className="bg-white border border-border rounded-none divide-y divide-border">
+            {addOns.map((a) => (
+              <div key={a.label} className="flex items-center justify-between px-6 py-4">
+                <span className="text-sm font-semibold text-foreground">{a.label}</span>
+                <span className="text-sm font-bold text-primary">{a.price}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Important Alert */}
         <div className="alert-box bg-secondary/30 border border-secondary p-6 md:p-8 rounded-none flex flex-col md:flex-row items-start md:items-center gap-6">
           <div className="shrink-0">
             <AlertCircle size={40} className="text-primary" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-foreground mb-1">Important Deadline</h3>
+            <h3 className="text-lg font-bold text-foreground mb-1">Key Deadlines</h3>
             <p className="text-muted-foreground text-sm">
-              All applications and COIs must be finalized by <strong>April 9th, 2027</strong>. Late submissions may result in forfeiture of booth space without refund.
+              Certificate of Insurance due <strong>April 2, 2027</strong>. Final balance due <strong>March 26, 2027</strong> —
+              unpaid balances are automatically charged to the card on file. Full terms are reviewed during
+              application.
             </p>
           </div>
-          <div className="shrink-0 w-full md:w-auto mt-4 md:mt-0 md:ml-auto">
+          <div className="shrink-0 w-full md:w-auto mt-4 md:mt-0 md:ml-auto flex flex-col gap-2">
+            <a
+              href={REGFOX_APPLY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 flex items-center justify-center gap-2 rounded-none bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-colors"
+            >
+              View Full Terms &amp; Apply
+              <ExternalLink size={15} />
+            </a>
             <Link
               href="/contact-us"
               className="px-6 py-3 block text-center rounded-none bg-white border border-border font-bold text-sm text-foreground hover:bg-muted transition-colors"

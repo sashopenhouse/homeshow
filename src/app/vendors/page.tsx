@@ -4,17 +4,15 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import Link from "next/link";
-import { Sparkles, ExternalLink, ArrowRight, Users, Calendar, MapPin, CheckCircle2, FileText, Map } from "lucide-react";
+import { Sparkles, ExternalLink, ArrowRight, Users, Calendar, DollarSign, CheckCircle2, FileText, Map } from "lucide-react";
 
-// TEMP: points to the contact page until the real RegFox registration URL is provided.
-// Swap this one line for the RegFox URL (https://…) — the button auto-opens external links in a new tab.
-const REGFOX_APPLY_URL = "/contact-us";
+const REGFOX_APPLY_URL = "https://kesslerpromotionsinc.regfox.com/2027-home-show-nexus-center-";
 const APPLY_IS_EXTERNAL = REGFOX_APPLY_URL.startsWith("http");
 
 const highlights = [
   { icon: Users, title: "20,000+ attendees", desc: "Two days of motivated homeowners under one roof." },
   { icon: Calendar, title: "April 24–25, 2027", desc: "Saturday & Sunday at the Utica University Nexus Center." },
-  { icon: MapPin, title: "Prime floor placement", desc: "Booths across two rinks with strong foot traffic." },
+  { icon: DollarSign, title: "Booths from $395", desc: "10x10 standard, 10x20 end caps, tasting & non-profit rates." },
   { icon: CheckCircle2, title: "200+ exhibitors", desc: "Join the region's premier home improvement showcase." },
 ];
 
@@ -72,8 +70,8 @@ export default function VendorApplicationPage() {
         <div className="fade-up bg-primary rounded-none p-8 md:p-10 flex flex-col items-center text-center gap-5 shadow-lg">
           <h2 className="text-2xl md:text-3xl font-extrabold text-primary-foreground">Ready to secure your booth?</h2>
           <p className="text-primary-foreground/80 max-w-md text-sm">
-            Reserve your exhibition space for the 2027 Home Show — get in touch and our team will get
-            you set up with a booth.
+            Reserve your exhibition space for the 2027 Home Show through our registration partner,
+            RegFox — booth selection, add-ons, and payment all happen in one application.
           </p>
           <a
             href={REGFOX_APPLY_URL}
