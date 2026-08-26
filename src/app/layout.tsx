@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
-import TransitionLayout from "@/components/animations/TransitionLayout";
-import Navbar from "@/components/Navbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,8 +19,6 @@ export const metadata: Metadata = {
   description: "The official website for the Home Show at Nexus Center.",
 };
 
-import Footer from "@/components/Footer";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,11 +29,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${fraunces.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
-        <Navbar />
-        <TransitionLayout>{children}</TransitionLayout>
-        <Footer />
-      </body>
+      <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );
 }
