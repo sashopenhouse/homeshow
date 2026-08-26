@@ -157,9 +157,10 @@ export default function VendorFeedPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {posts.map((post) => (
-              <article
+              <Link
                 key={post.id}
-                className="feed-card bg-white border border-border rounded-none shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-300 flex flex-col overflow-hidden"
+                href={`/vendors/feed/${post.id}`}
+                className="feed-card group bg-white border border-border rounded-none shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-300 flex flex-col overflow-hidden"
               >
                 {post.image_url && (
                   <div className="w-full aspect-[16/9] bg-muted overflow-hidden border-b border-border">
@@ -185,7 +186,7 @@ export default function VendorFeedPage() {
                     <PostTypeBadge type={post.post_type} />
                   </div>
 
-                  <h2 className="text-lg font-bold text-foreground mb-2 leading-snug">
+                  <h2 className="text-lg font-bold text-foreground mb-2 leading-snug group-hover:text-primary transition-colors">
                     {post.title}
                   </h2>
                   <p className="text-muted-foreground text-sm leading-relaxed mb-6 line-clamp-4 whitespace-pre-line">
@@ -199,7 +200,7 @@ export default function VendorFeedPage() {
                     </div>
                   </div>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         )}
