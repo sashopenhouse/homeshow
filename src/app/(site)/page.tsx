@@ -125,7 +125,7 @@ export default function HomePage() {
             <h1 className="hero-title text-4xl sm:text-6xl md:text-7xl xl:text-8xl font-semibold tracking-tight leading-[0.95] sm:leading-[0.92] text-white mb-3 sm:whitespace-nowrap drop-shadow-lg">
               The Home Show
             </h1>
-            <h2 className="hero-title italic font-normal text-3xl md:text-4xl tracking-tight text-primary mb-7 drop-shadow-md">
+            <h2 className="hero-title inline-block italic font-normal text-3xl md:text-4xl tracking-tight text-primary bg-black/90 backdrop-blur-sm px-3 py-1 mb-7">
               at Nexus Center
             </h2>
 
