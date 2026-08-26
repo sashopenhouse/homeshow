@@ -123,7 +123,7 @@ export default function HomePage() {
 
             {/* Main Title */}
             <h1 className="hero-title text-6xl md:text-8xl font-black tracking-tighter leading-none text-white mb-2 drop-shadow-lg">
-              Home Show
+              The Home Show
             </h1>
             <h2 className="hero-title text-4xl md:text-5xl font-extrabold tracking-tight text-primary mb-6 drop-shadow-md">
               at Nexus Center
