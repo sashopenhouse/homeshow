@@ -26,7 +26,7 @@ export default function HomePage() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    const targetDate = new Date("2027-01-30T09:00:00").getTime();
+    const targetDate = new Date("2027-04-24T09:00:00").getTime();
 
     const updateTimer = () => {
       const now = new Date().getTime();
@@ -116,7 +116,7 @@ export default function HomePage() {
             <div className="hero-eyebrow inline-flex items-center gap-2 px-4 py-1.5 rounded-none bg-primary/90 border border-primary mb-6 backdrop-blur-sm">
               <Star size={11} className="text-white fill-white" />
               <span className="text-xs font-bold text-white tracking-widest uppercase">
-                January 30 &amp; 31, 2027 · Nexus Center
+                April 24 &amp; 25, 2027 · Nexus Center
               </span>
               <Star size={11} className="text-white fill-white" />
             </div>
@@ -130,7 +130,7 @@ export default function HomePage() {
             </h2>
 
             <p className="hero-sub text-base md:text-lg text-white/80 leading-relaxed mb-10">
-              The region's premier event for home improvement, architectural design,
+              The region's premier spring event for home improvement, architectural design,
               and modern lifestyle — all under one roof.
             </p>
 
@@ -187,7 +187,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="mt-4 text-[10px] text-white/40 text-center font-bold uppercase tracking-wider">
-              Jan 30, 2027 @ 9:00 AM EST
+              Apr 24, 2027 @ 9:00 AM EST
             </div>
           </div>
         </div>
@@ -217,7 +217,7 @@ export default function HomePage() {
             Something for <span className="text-gold">Everyone</span>
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
-            More than just a home show — a full weekend experience.
+            More than just a home show — a full spring weekend experience.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

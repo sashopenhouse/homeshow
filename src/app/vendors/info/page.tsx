@@ -10,7 +10,7 @@ const infoSections = [
   {
     title: "Load-In & Setup",
     icon: Truck,
-    content: "All exhibitors must load in on Thursday, Jan 29th (8am - 6pm) or Friday, Jan 30th (8am - 4pm). No load-ins will be permitted on Saturday morning. Large vehicles must schedule a dock time."
+    content: "All exhibitors must load in on Thursday, Apr 22nd (8am - 6pm) or Friday, Apr 23rd (8am - 4pm). No load-ins will be permitted on Saturday morning. Large vehicles must schedule a dock time."
   },
   {
     title: "Booth Guidelines",
@@ -25,7 +25,7 @@ const infoSections = [
   {
     title: "Required Documents",
     icon: FileText,
-    content: "A valid Certificate of Insurance (COI) naming Kessler Promotions and Nexus Center as additional insured must be submitted by January 15th, 2027."
+    content: "A valid Certificate of Insurance (COI) naming Kessler Promotions and Nexus Center as additional insured must be submitted by April 9th, 2027."
   }
 ];
 
@@ -93,7 +93,7 @@ export default function VendorInfoPage() {
           <div>
             <h3 className="text-lg font-bold text-foreground mb-1">Important Deadline</h3>
             <p className="text-muted-foreground text-sm">
-              All applications and COIs must be finalized by <strong>January 15th, 2027</strong>. Late submissions may result in forfeiture of booth space without refund.
+              All applications and COIs must be finalized by <strong>April 9th, 2027</strong>. Late submissions may result in forfeiture of booth space without refund.
             </p>
           </div>
           <div className="shrink-0 w-full md:w-auto mt-4 md:mt-0 md:ml-auto">

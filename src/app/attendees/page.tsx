@@ -8,7 +8,7 @@ import { Calendar, Ticket, MapPin, Clock, Users } from "lucide-react";
 const days = [
   {
     label: "Saturday",
-    date: "January 30, 2027",
+    date: "April 24, 2027",
     hours: "9:00 AM – 6:00 PM",
     events: [
       { time: "9:00 AM", title: "Doors Open", desc: "Welcome to the 2027 Home Show. Registration and vendor walkthrough begins." },
@@ -21,7 +21,7 @@ const days = [
   },
   {
     label: "Sunday",
-    date: "January 31, 2027",
+    date: "April 25, 2027",
     hours: "10:00 AM – 5:00 PM",
     events: [
       { time: "10:00 AM", title: "Doors Open", desc: "Day two of the 2027 Home Show kicks off." },
@@ -78,7 +78,7 @@ export default function AttendeesPage() {
             Plan Your <span className="text-primary">Visit</span>
           </h1>
           <p className="text-muted-foreground max-w-xl mx-auto text-base">
-            Everything you need for an amazing weekend. Buy your tickets, review each day&apos;s schedule, and prepare for a home show like no other.
+            Everything you need for an amazing spring weekend. Buy your tickets, review each day&apos;s schedule, and prepare for a home show like no other.
           </p>
         </div>
 
@@ -149,7 +149,7 @@ export default function AttendeesPage() {
                 </li>
                 <li className="flex items-center gap-3 text-sm font-medium">
                   <Calendar className="text-primary" size={18} />
-                  <span>Jan 30 - 31, 2027</span>
+                  <span>Apr 24 - 25, 2027</span>
                 </li>
               </ul>
 

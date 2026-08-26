@@ -8,7 +8,7 @@ export default function Footer() {
         <div>
           <h3 className="font-bold text-lg mb-4">Home Show at Nexus Center</h3>
           <p className="text-muted-foreground text-sm">
-            January 30th & 31st, 2027<br />
+            April 24th & 25th, 2027<br />
             Utica University Nexus Center<br />
             Utica, NY
           </p>

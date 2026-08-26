@@ -13,7 +13,7 @@ const APPLY_IS_EXTERNAL = REGFOX_APPLY_URL.startsWith("http");
 
 const highlights = [
   { icon: Users, title: "20,000+ attendees", desc: "Two days of motivated homeowners under one roof." },
-  { icon: Calendar, title: "January 30–31, 2027", desc: "Saturday & Sunday at the Utica University Nexus Center." },
+  { icon: Calendar, title: "April 24–25, 2027", desc: "Saturday & Sunday at the Utica University Nexus Center." },
   { icon: MapPin, title: "Prime floor placement", desc: "Booths across two rinks with strong foot traffic." },
   { icon: CheckCircle2, title: "200+ exhibitors", desc: "Join the region's premier home improvement showcase." },
 ];
@@ -48,7 +48,7 @@ export default function VendorApplicationPage() {
             Become a <span className="text-primary">Vendor</span>
           </h1>
           <p className="text-muted-foreground max-w-xl mx-auto text-base">
-            Exhibit at the region&apos;s premier Home Show — January 30–31, 2027 at the Utica University
+            Exhibit at the region&apos;s premier spring Home Show — April 24–25, 2027 at the Utica University
             Nexus Center. Reserve your booth through our registration partner.
           </p>
         </div>
