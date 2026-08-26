@@ -73,10 +73,8 @@ export default function Navbar() {
     <>
       <nav
         ref={ref}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "bg-white/90 backdrop-blur-xl border-b border-border shadow-sm"
-            : "bg-white/70 backdrop-blur-md border-b border-transparent"
+        className={`fixed top-0 left-0 right-0 z-50 bg-white border-b border-border transition-shadow duration-500 ${
+          scrolled ? "shadow-sm" : ""
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
