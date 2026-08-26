@@ -109,9 +109,9 @@ export default function HomePage() {
         </div>
 
         {/* Hero content */}
-        <div className="relative z-10 max-w-7xl mx-auto w-full px-6 pb-16 pt-32 flex flex-col md:flex-row md:items-end md:justify-between gap-12">
+        <div className="relative z-10 max-w-7xl mx-auto w-full px-6 pb-16 pt-32 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-12">
           {/* Left Column */}
-          <div className="flex flex-col items-start max-w-xl">
+          <div className="flex flex-col items-start max-w-xl md:max-w-2xl lg:max-w-3xl">
             {/* Eyebrow badge */}
             <div className="hero-eyebrow inline-flex items-center gap-2 px-4 py-1.5 rounded-none bg-primary/90 border border-primary mb-6 backdrop-blur-sm">
               <Star size={11} className="text-white fill-white" />
@@ -122,14 +122,14 @@ export default function HomePage() {
             </div>
 
             {/* Main Title */}
-            <h1 className="hero-title text-6xl md:text-8xl font-black tracking-tighter leading-none text-white mb-2 drop-shadow-lg">
+            <h1 className="hero-title text-4xl sm:text-6xl md:text-7xl xl:text-8xl font-semibold tracking-tight leading-[0.95] sm:leading-[0.92] text-white mb-3 sm:whitespace-nowrap drop-shadow-lg">
               The Home Show
             </h1>
-            <h2 className="hero-title text-4xl md:text-5xl font-extrabold tracking-tight text-primary mb-6 drop-shadow-md">
+            <h2 className="hero-title italic font-normal text-3xl md:text-4xl tracking-tight text-primary mb-7 drop-shadow-md">
               at Nexus Center
             </h2>
 
-            <p className="hero-sub text-base md:text-lg text-white/80 leading-relaxed mb-10">
+            <p className="hero-sub text-base md:text-lg text-white/80 leading-relaxed mb-10 max-w-md">
               The region's premier spring event for home improvement, architectural design,
               and modern lifestyle — all under one roof.
             </p>
@@ -166,8 +166,8 @@ export default function HomePage() {
           </div>
 
           {/* Right Column: flat square countdown card */}
-          <div className="hero-countdown bg-black/40 backdrop-blur-md border border-white/10 p-8 rounded-none w-full md:w-80 shrink-0 self-start md:self-end">
-            <h3 className="text-xs font-bold text-white/60 uppercase tracking-widest mb-4 text-center md:text-left">Show Starts In</h3>
+          <div className="hero-countdown bg-black/40 backdrop-blur-md border border-white/10 p-8 rounded-none w-full lg:w-80 shrink-0 self-start lg:self-end">
+            <h3 className="text-xs font-bold text-white/60 uppercase tracking-widest mb-4 text-center lg:text-left">Show Starts In</h3>
             <div className="grid grid-cols-4 gap-2 text-center">
               <div className="bg-white/5 border border-white/10 py-3 rounded-none">
                 <span className="block text-2xl font-black text-white">{String(timeLeft.days).padStart(2, '0')}</span>
