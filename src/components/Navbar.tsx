@@ -82,11 +82,11 @@ export default function Navbar() {
           <Link href="/" className="flex items-center group">
             <Image
               src="/logo.png"
-              alt="The Home Show at Utica University Nexus Center"
-              width={427}
-              height={80}
+              alt="The Spring Home Show at Utica University Nexus Center, presented by New York SASH"
+              width={3908}
+              height={1313}
               priority
-              className="h-14 md:h-20 w-auto transition-transform group-hover:scale-[1.03]"
+              className="h-11 md:h-16 w-auto transition-transform group-hover:scale-[1.03]"
             />
           </Link>
 
@@ -157,7 +157,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <Link
               href="/vendors"
-              className="px-5 py-2.5 rounded-none bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-all hover:scale-105 hover:shadow-[0_4px_20px_oklch(0.55_0.18_142/0.30)] active:scale-95"
+              className="px-5 py-2.5 rounded-none bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-all hover:scale-105 hover:shadow-[0_4px_20px_oklch(0.58_0.11_220/0.30)] active:scale-95"
             >
               Apply to Exhibit
             </Link>

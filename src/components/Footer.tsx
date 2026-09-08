@@ -21,7 +21,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-12">
           {/* Brand column */}
           <div className="md:col-span-5">
-            <Image src="/logo.png" alt="The Home Show at Utica University Nexus Center" width={427} height={80} className="h-12 w-auto mb-5" />
+            <Image src="/logo.png" alt="The Spring Home Show at Utica University Nexus Center, presented by New York SASH" width={3908} height={1313} className="h-14 w-auto mb-5" />
             <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mb-6">
               The region&apos;s premier spring event for home improvement, architectural
               design, and modern lifestyle — all under one roof.

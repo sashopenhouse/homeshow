@@ -35,6 +35,12 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-brand-green-foreground: var(--brand-green-foreground);
+  --color-brand-green: var(--brand-green);
+  --color-brand-gold-foreground: var(--brand-gold-foreground);
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-purple-foreground: var(--brand-purple-foreground);
+  --color-brand-purple: var(--brand-purple);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -48,7 +54,13 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* ─── Brand Theme: Crisp White + Home Show Green ──────────────── */
+/* ─── Brand Theme: Crisp White + Spring Home Show Palette ───────
+   Sampled from the new logo: blue "Spring" script, green wordmark/
+   building mark, gold sun + "&", purple flower. Blue is primary
+   (dominant script color); green stays a strong secondary/accent
+   since it's still the wordmark color; gold and purple are reserved
+   for small decorative accents (badges, highlights) rather than
+   large surfaces, matching how sparingly the logo itself uses them. */
 :root {
   --background: oklch(0.99 0.001 100);
   --foreground: oklch(0.16 0.008 260);
@@ -59,8 +71,8 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.16 0.008 260);
 
-  /* Home Show brand green */
-  --primary: oklch(0.55 0.18 142);
+  /* Spring Home Show brand blue (from "Spring" script) */
+  --primary: oklch(0.58 0.11 220);
   --primary-foreground: oklch(1 0 0);
 
   --secondary: oklch(0.94 0.01 142);
@@ -69,30 +81,42 @@
   --muted: oklch(0.95 0.005 100);
   --muted-foreground: oklch(0.50 0.01 260);
 
-  --accent: oklch(0.55 0.18 142);
+  --accent: oklch(0.58 0.11 220);
   --accent-foreground: oklch(1 0 0);
+
+  /* Home Show wordmark green — kept as a secondary brand color */
+  --brand-green: oklch(0.55 0.18 142);
+  --brand-green-foreground: oklch(1 0 0);
+
+  /* Sun / "&" gold — decorative accent only */
+  --brand-gold: oklch(0.80 0.16 85);
+  --brand-gold-foreground: oklch(0.20 0.01 260);
+
+  /* Flower purple — decorative accent only */
+  --brand-purple: oklch(0.62 0.13 305);
+  --brand-purple-foreground: oklch(1 0 0);
 
   --destructive: oklch(0.60 0.22 25);
   --border: oklch(0.88 0.005 260);
   --input: oklch(0.92 0.004 260);
-  --ring: oklch(0.55 0.18 142);
+  --ring: oklch(0.58 0.11 220);
 
-  --chart-1: oklch(0.55 0.18 142);
-  --chart-2: oklch(0.65 0.15 160);
-  --chart-3: oklch(0.50 0.12 200);
-  --chart-4: oklch(0.60 0.18 310);
+  --chart-1: oklch(0.58 0.11 220);
+  --chart-2: oklch(0.55 0.18 142);
+  --chart-3: oklch(0.80 0.16 85);
+  --chart-4: oklch(0.62 0.13 305);
   --chart-5: oklch(0.55 0.16 35);
 
   --radius: 0px;
 
-  --sidebar: oklch(0.96 0.006 142);
+  --sidebar: oklch(0.96 0.006 220);
   --sidebar-foreground: oklch(0.16 0.008 260);
-  --sidebar-primary: oklch(0.55 0.18 142);
+  --sidebar-primary: oklch(0.58 0.11 220);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.92 0.01 142);
-  --sidebar-accent-foreground: oklch(0.20 0.01 142);
+  --sidebar-accent: oklch(0.92 0.01 220);
+  --sidebar-accent-foreground: oklch(0.20 0.01 220);
   --sidebar-border: oklch(0.88 0.005 260);
-  --sidebar-ring: oklch(0.55 0.18 142);
+  --sidebar-ring: oklch(0.58 0.11 220);
 }
 
 /* ─── Custom Utility Classes ──────────────────────────────────── */
@@ -102,13 +126,13 @@
     background: oklch(1 0 0 / 0.75);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid oklch(0.55 0.18 142 / 0.12);
+    border: 1px solid oklch(0.58 0.11 220 / 0.12);
   }
 
-  /* Green glow ring */
+  /* Brand blue glow ring */
   .glow-ring {
-    box-shadow: 0 0 0 1px oklch(0.55 0.18 142 / 0.35),
-                0 0 20px oklch(0.55 0.18 142 / 0.12);
+    box-shadow: 0 0 0 1px oklch(0.58 0.11 220 / 0.35),
+                0 0 20px oklch(0.58 0.11 220 / 0.12);
   }
 
   /* Noise overlay texture */
@@ -124,17 +148,17 @@
     border-radius: inherit;
   }
 
-  /* Brand green gradient text */
+  /* Brand blue-to-green gradient text */
   .text-gold {
-    background: linear-gradient(135deg, oklch(0.58 0.20 142) 0%, oklch(0.48 0.16 150) 50%, oklch(0.55 0.18 138) 100%);
+    background: linear-gradient(135deg, oklch(0.58 0.11 220) 0%, oklch(0.55 0.18 142) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* Brand green border accent */
+  /* Brand blue border accent */
   .border-gold {
-    border-color: oklch(0.55 0.18 142 / 0.5);
+    border-color: oklch(0.58 0.11 220 / 0.5);
   }
 }
 
