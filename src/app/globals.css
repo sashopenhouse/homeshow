@@ -162,6 +162,107 @@
   }
 }
 
+/* Footer newsletter sign-up — Constant Contact "HS form for NYS web",
+   restyled from the vendor's dark/red defaults to the site's light/blue
+   theme. Selectors mirror the vendor snippet; only the design tokens
+   referenced (color, spacing, radius) were changed. */
+#hs-footer-signup .ctct-form-container {
+  max-width: 100% !important;
+  margin: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+#hs-footer-signup .ctct-form-defaults {
+  background: transparent !important;
+  padding: 0 !important;
+}
+#hs-footer-signup form.ctct-form-custom {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: flex-end !important;
+  gap: 1rem 1.5rem !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+#hs-footer-signup .ctct-form-header {
+  flex: 0 0 100% !important;
+  margin: 0 0 0.35rem !important;
+  color: oklch(0.16 0.008 260) !important;
+  font-size: 1.35rem !important;
+  font-weight: 800 !important;
+}
+#hs-footer-signup .ctct-form-text {
+  flex: 0 0 100% !important;
+  margin: 0 0 1rem !important;
+  color: oklch(0.5 0.01 260) !important;
+  font-size: 0.95rem !important;
+  max-width: 640px !important;
+}
+#hs-footer-signup .ctct-form-field {
+  flex: 1 1 260px !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+#hs-footer-signup .ctct-form-label {
+  display: block !important;
+  color: oklch(0.5 0.01 260) !important;
+  font-size: 0.8rem !important;
+  margin-bottom: 0.35rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+#hs-footer-signup .ctct-form-element {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 0.7rem 0.85rem !important;
+  border: 1px solid oklch(0.88 0.005 260) !important;
+  border-radius: 0 !important;
+  background: oklch(0.99 0.001 100) !important;
+  font-size: 1rem !important;
+}
+#hs-footer-signup .ctct-form-button {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 150px !important;
+  background: oklch(0.58 0.11 220) !important;
+  color: #fff !important;
+  border: 0 !important;
+  padding: 0.8rem 1.75rem !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  border-radius: 0 !important;
+  cursor: pointer;
+  white-space: nowrap;
+}
+#hs-footer-signup .ctct-form-button:hover {
+  filter: brightness(1.08);
+}
+#hs-footer-signup #gdpr_text,
+#hs-footer-signup .ctct-gdpr-text {
+  flex: 0 0 100% !important;
+  order: 5 !important;
+  margin: 0.25rem 0 0 !important;
+  color: oklch(0.5 0.01 260) !important;
+  font-size: 0.72rem !important;
+  line-height: 1.4 !important;
+}
+#hs-footer-signup .ctct-gdpr-text a {
+  color: oklch(0.5 0.01 260) !important;
+}
+
+@media (max-width: 640px) {
+  #hs-footer-signup form.ctct-form-custom {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  #hs-footer-signup .ctct-form-button {
+    width: 100% !important;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

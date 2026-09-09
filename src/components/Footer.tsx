@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import Script from "next/script";
 import { Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
 
 const quickLinks = [
@@ -14,6 +15,13 @@ const quickLinks = [
 export default function Footer() {
   return (
     <footer className="relative bg-muted border-t border-border">
+      {/* Newsletter sign-up — Constant Contact form "HS form for NYS web",
+          restyled to match the site's light/blue theme instead of the
+          vendor-supplied dark/red defaults. */}
+      <div id="hs-footer-signup" className="bg-background border-b border-border px-6 py-10">
+        <div className="ctct-inline-form max-w-3xl mx-auto" data-form-id="82a535c0-21ad-4091-bd8f-081bd3d66787" />
+      </div>
+
       {/* Brand accent line */}
       <div className="h-1 w-full bg-gradient-to-r from-primary via-primary/60 to-primary" />
 
@@ -96,6 +104,18 @@ export default function Footer() {
           </div>
         </div>
       </div>
+
+      {/* Constant Contact Active Forms widget — powers every .ctct-inline-form
+          on the page. Load once per page, hence the guard here rather than
+          in globals.css: Footer renders once per page via the (site) layout. */}
+      <Script id="ctct-signup-active-data" strategy="lazyOnload">
+        {`var _ctct_m = "fd10809d1b986689766601ea7d1efbf2";`}
+      </Script>
+      <Script
+        id="ctct-signup-widget"
+        src="https://static.ctctcdn.com/js/signup-form-widget/current/signup-form-widget.min.js"
+        strategy="lazyOnload"
+      />
     </footer>
   );
 }
