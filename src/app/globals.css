@@ -189,17 +189,10 @@
   background: transparent !important;
   padding: 0 !important;
 }
-/* The CC form's own "header" becomes the small "Subscribe" label above
-   the input — our headline/subtext in the card's left column cover the
-   actual pitch, so this is kept short and de-emphasized. */
-#hs-footer-signup .ctct-form-header {
-  flex: 0 0 100% !important;
-  margin: 0 0 0.6rem !important;
-  color: var(--foreground) !important;
-  font-size: 1.25rem !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.01em;
-}
+/* The CC form's own configured header/text duplicate our headline and
+   subtext in the card's left column — hide both, the embed here is
+   just the input + button. */
+#hs-footer-signup .ctct-form-header,
 #hs-footer-signup .ctct-form-text {
   display: none !important;
 }
