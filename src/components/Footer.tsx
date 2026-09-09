@@ -15,11 +15,12 @@ const quickLinks = [
 export default function Footer() {
   return (
     <footer className="relative bg-muted border-t border-border">
-      {/* Newsletter sign-up — Constant Contact form "HS form for NYS web",
-          restyled to match the site's light/blue theme instead of the
-          vendor-supplied dark/red defaults. */}
-      <div id="hs-footer-signup" className="bg-background border-b border-border px-6 py-10">
-        <div className="ctct-inline-form max-w-3xl mx-auto" data-form-id="82a535c0-21ad-4091-bd8f-081bd3d66787" />
+      {/* Newsletter sign-up — Constant Contact form "HS form for NYS web".
+          Styled as a bold CTA banner (solid brand-blue, big headline) rather
+          than a plain form card — see #hs-footer-signup rules in
+          globals.css for the ctct-* class overrides that make that work. */}
+      <div id="hs-footer-signup" className="bg-primary px-6 py-12">
+        <div className="ctct-inline-form max-w-5xl mx-auto" data-form-id="82a535c0-21ad-4091-bd8f-081bd3d66787" />
       </div>
 
       {/* Brand accent line */}

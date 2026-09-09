@@ -163,9 +163,10 @@
 }
 
 /* Footer newsletter sign-up — Constant Contact "HS form for NYS web",
-   restyled from the vendor's dark/red defaults to the site's light/blue
-   theme. Selectors mirror the vendor snippet; only the design tokens
-   referenced (color, spacing, radius) were changed. */
+   restyled as a bold CTA banner (solid brand-blue, big white headline,
+   pill input + high-contrast button) rather than a plain form card.
+   Selectors mirror the vendor snippet; the layout/tone was changed to
+   read as a call-to-action instead of a data-entry form. */
 #hs-footer-signup .ctct-form-container {
   max-width: 100% !important;
   margin: 0 !important;
@@ -182,81 +183,95 @@
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
-  align-items: flex-end !important;
-  gap: 1rem 1.5rem !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.75rem 1.25rem !important;
   background: transparent !important;
   padding: 0 !important;
+  text-align: center !important;
 }
 #hs-footer-signup .ctct-form-header {
   flex: 0 0 100% !important;
-  margin: 0 0 0.35rem !important;
-  color: oklch(0.16 0.008 260) !important;
-  font-size: 1.35rem !important;
+  margin: 0 0 0.5rem !important;
+  color: var(--primary-foreground) !important;
+  font-size: 2rem !important;
   font-weight: 800 !important;
+  letter-spacing: -0.01em;
 }
 #hs-footer-signup .ctct-form-text {
   flex: 0 0 100% !important;
-  margin: 0 0 1rem !important;
-  color: oklch(0.5 0.01 260) !important;
-  font-size: 0.95rem !important;
-  max-width: 640px !important;
+  margin: 0 auto 1.5rem !important;
+  color: oklch(1 0 0 / 0.85) !important;
+  font-size: 1.05rem !important;
+  max-width: 480px !important;
 }
 #hs-footer-signup .ctct-form-field {
-  flex: 1 1 260px !important;
+  flex: 0 1 300px !important;
   width: auto !important;
   margin: 0 !important;
 }
+/* Labels above a colored CTA read as form chrome, not a pitch — hide
+   them visually but keep them for screen readers. */
 #hs-footer-signup .ctct-form-label {
-  display: block !important;
-  color: oklch(0.5 0.01 260) !important;
-  font-size: 0.8rem !important;
-  margin-bottom: 0.35rem !important;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
 }
 #hs-footer-signup .ctct-form-element {
   width: 100% !important;
   box-sizing: border-box !important;
-  padding: 0.7rem 0.85rem !important;
-  border: 1px solid oklch(0.88 0.005 260) !important;
-  border-radius: 0 !important;
-  background: oklch(0.99 0.001 100) !important;
+  padding: 0.85rem 1.25rem !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: var(--primary-foreground) !important;
+  color: oklch(0.16 0.008 260) !important;
   font-size: 1rem !important;
+  box-shadow: 0 2px 10px oklch(0.16 0.008 260 / 0.15);
+}
+#hs-footer-signup .ctct-form-element::placeholder {
+  color: oklch(0.5 0.01 260) !important;
 }
 #hs-footer-signup .ctct-form-button {
   flex: 0 0 auto !important;
   width: auto !important;
-  min-width: 150px !important;
-  background: oklch(0.58 0.11 220) !important;
+  min-width: 160px !important;
+  background: oklch(0.16 0.008 260) !important;
   color: #fff !important;
   border: 0 !important;
-  padding: 0.8rem 1.75rem !important;
+  padding: 0.85rem 2rem !important;
   font-size: 1rem !important;
   font-weight: 700 !important;
-  border-radius: 0 !important;
+  border-radius: 999px !important;
   cursor: pointer;
   white-space: nowrap;
+  transition: transform 0.15s ease, background 0.15s ease;
 }
 #hs-footer-signup .ctct-form-button:hover {
-  filter: brightness(1.08);
+  background: oklch(0.24 0.01 260) !important;
+  transform: translateY(-1px);
 }
 #hs-footer-signup #gdpr_text,
 #hs-footer-signup .ctct-gdpr-text {
   flex: 0 0 100% !important;
   order: 5 !important;
-  margin: 0.25rem 0 0 !important;
-  color: oklch(0.5 0.01 260) !important;
+  margin: 0.75rem 0 0 !important;
+  color: oklch(1 0 0 / 0.6) !important;
   font-size: 0.72rem !important;
   line-height: 1.4 !important;
 }
 #hs-footer-signup .ctct-gdpr-text a {
-  color: oklch(0.5 0.01 260) !important;
+  color: oklch(1 0 0 / 0.75) !important;
 }
 
 @media (max-width: 640px) {
   #hs-footer-signup form.ctct-form-custom {
     flex-direction: column !important;
     align-items: stretch !important;
+  }
+  #hs-footer-signup .ctct-form-field {
+    flex: 0 0 auto !important;
   }
   #hs-footer-signup .ctct-form-button {
     width: 100% !important;
