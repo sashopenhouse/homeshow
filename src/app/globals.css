@@ -190,11 +190,30 @@
   padding: 0 !important;
 }
 /* The CC form's own configured header/text duplicate our headline and
-   subtext in the card's left column — hide both, the embed here is
-   just the input + button. */
-#hs-footer-signup .ctct-form-header,
-#hs-footer-signup .ctct-form-text {
+   subtext in the card's left column — hide both, but only inside the
+   pre-submit <form> itself. .ctct-form-success is a SIBLING of the
+   form (both live under .ctct-form-defaults) and reuses these same
+   class names for the post-submit "Thanks for subscribing!" message,
+   so scoping to "form .ctct-form-header" (not the defaults wrapper)
+   is what keeps that confirmation from being hidden too. */
+#hs-footer-signup form.ctct-form-custom .ctct-form-header,
+#hs-footer-signup form.ctct-form-custom .ctct-form-text {
   display: none !important;
+}
+/* Post-submit confirmation message — was getting swallowed by the
+   rule above before it was scoped; style it to match the card. */
+#hs-footer-signup .ctct-form-success {
+  text-align: center !important;
+}
+#hs-footer-signup .ctct-form-success .ctct-form-header {
+  color: var(--primary-foreground) !important;
+  font-size: 1.25rem !important;
+  font-weight: 800 !important;
+}
+#hs-footer-signup .ctct-form-success .ctct-form-text {
+  color: var(--primary-foreground) !important;
+  opacity: 0.85;
+  font-size: 0.95rem !important;
 }
 #hs-footer-signup .ctct-form-field {
   flex: 1 1 220px !important;
