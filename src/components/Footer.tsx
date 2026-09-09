@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import Script from "next/script";
-import { Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
+import { Mail, Phone, MapPin, ArrowUpRight, Ticket, Percent, Store, Gift } from "lucide-react";
 
 const quickLinks = [
   { href: "/attendees", label: "Attendees" },
@@ -12,15 +12,47 @@ const quickLinks = [
   { href: "/contact-us", label: "Contact Us" },
 ];
 
+const newsletterPerks = [
+  { icon: Ticket, label: "Show updates", desc: "on dates, hours, and what's new this year" },
+  { icon: Percent, label: "Admission coupons", desc: "and other subscriber-only discounts" },
+  { icon: Store, label: "Vendor & exhibitor news", desc: "so you know who's showing up" },
+  { icon: Gift, label: "Giveaway alerts", desc: "so you never miss a drawing" },
+];
+
 export default function Footer() {
   return (
     <footer className="relative bg-muted border-t border-border">
       {/* Newsletter sign-up — Constant Contact form "HS form for NYS web".
-          Styled as a bold CTA banner (solid brand-blue, big headline) rather
-          than a plain form card — see #hs-footer-signup rules in
-          globals.css for the ctct-* class overrides that make that work. */}
-      <div id="hs-footer-signup" className="bg-primary px-6 py-12">
-        <div className="ctct-inline-form max-w-5xl mx-auto" data-form-id="82a535c0-21ad-4091-bd8f-081bd3d66787" />
+          Two-column card: our own headline/perks on the left (the CC form
+          has no fields for a benefit list, so that's static markup here),
+          the embed restyled down to just "Subscribe" + pill input + arrow
+          button on the right — see #hs-footer-signup rules in globals.css. */}
+      <div className="px-6 py-14">
+        <div id="hs-footer-signup" className="max-w-5xl mx-auto bg-background border border-border rounded-2xl overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2">
+            <div className="p-8 md:p-10 md:border-r border-border">
+              <h3 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mb-3">
+                Join the Home Show Mailing List
+              </h3>
+              <p className="text-muted-foreground text-sm mb-6">
+                Get important show information, updates on entertainment, admission coupons, and more!
+              </p>
+              <div className="border-t border-border pt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {newsletterPerks.map(({ icon: Icon, label, desc }) => (
+                  <div key={label} className="flex items-start gap-2.5">
+                    <Icon size={16} className="text-primary shrink-0 mt-0.5" />
+                    <p className="text-sm text-muted-foreground leading-snug">
+                      <span className="font-semibold text-foreground">{label}</span> {desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="p-8 md:p-10 flex flex-col justify-center bg-muted/40">
+              <div className="ctct-inline-form" data-form-id="82a535c0-21ad-4091-bd8f-081bd3d66787" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Brand accent line */}
