@@ -189,6 +189,8 @@
   background: transparent !important;
   padding: 0 !important;
   text-align: center !important;
+  max-width: 640px !important;
+  margin: 0 auto !important;
 }
 #hs-footer-signup .ctct-form-header {
   flex: 0 0 100% !important;
@@ -206,8 +208,9 @@
   max-width: 480px !important;
 }
 #hs-footer-signup .ctct-form-field {
-  flex: 0 1 300px !important;
+  flex: 1 1 260px !important;
   width: auto !important;
+  max-width: 340px !important;
   margin: 0 !important;
 }
 /* Labels above a colored CTA read as form chrome, not a pitch — hide
