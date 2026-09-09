@@ -232,8 +232,8 @@
   width: 2.75rem !important;
   height: 2.75rem !important;
   min-width: 0 !important;
-  background: var(--primary) !important;
-  color: var(--primary-foreground) !important;
+  background: var(--foreground) !important;
+  color: var(--background) !important;
   border: 0 !important;
   padding: 0 !important;
   font-size: 0 !important;
@@ -255,19 +255,20 @@
   font-size: 1.15rem;
 }
 #hs-footer-signup .ctct-form-button:hover {
-  background: oklch(0.5 0.11 220) !important;
+  background: oklch(0.24 0.01 260) !important;
 }
 #hs-footer-signup #gdpr_text,
 #hs-footer-signup .ctct-gdpr-text {
   flex: 0 0 100% !important;
   order: 5 !important;
   margin: 0.75rem 0 0 !important;
-  color: var(--muted-foreground) !important;
+  color: var(--primary-foreground) !important;
+  opacity: 0.75;
   font-size: 0.72rem !important;
   line-height: 1.4 !important;
 }
 #hs-footer-signup .ctct-gdpr-text a {
-  color: var(--muted-foreground) !important;
+  color: var(--primary-foreground) !important;
   text-decoration: underline;
 }
 

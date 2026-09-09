@@ -48,8 +48,8 @@ export default function Footer() {
                 ))}
               </div>
             </div>
-            <div className="p-8 md:p-10 flex flex-col justify-center bg-muted/40">
-              <h4 className="text-xl font-extrabold text-foreground tracking-tight mb-4">Subscribe</h4>
+            <div className="p-8 md:p-10 flex flex-col justify-center bg-primary">
+              <h4 className="text-xl font-extrabold text-primary-foreground tracking-tight mb-4">Subscribe</h4>
               <div className="ctct-inline-form" data-form-id="82a535c0-21ad-4091-bd8f-081bd3d66787" />
             </div>
           </div>
