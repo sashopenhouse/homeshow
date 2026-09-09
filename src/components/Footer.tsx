@@ -31,13 +31,13 @@ export default function Footer() {
         <div id="hs-footer-signup" className="max-w-5xl mx-auto bg-background border border-border rounded-2xl overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2">
             <div className="p-8 md:p-10 md:border-r border-border">
-              <h3 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mb-3">
+              <h3 className="text-lg md:text-xl font-extrabold text-foreground tracking-tight mb-2">
                 Join the Home Show Mailing List
               </h3>
-              <p className="text-muted-foreground text-sm mb-6">
+              <p className="text-muted-foreground text-sm mb-4">
                 Get important show information, updates on entertainment, admission coupons, and more!
               </p>
-              <div className="border-t border-border pt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="border-t border-border pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {newsletterPerks.map(({ icon: Icon, label, desc }) => (
                   <div key={label} className="flex items-start gap-2.5">
                     <Icon size={16} className="text-primary shrink-0 mt-0.5" />
