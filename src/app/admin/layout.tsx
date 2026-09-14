@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
-import { LayoutDashboard, FileText, BarChart3, ArrowLeft, Shield, Award, LogOut, Loader2, Megaphone, Map as MapIcon, Building2, Mail, Inbox } from "lucide-react";
+import { LayoutDashboard, FileText, BarChart3, ArrowLeft, Shield, Award, LogOut, Loader2, Megaphone, Map as MapIcon, Building2, Mail, Inbox, KeyRound } from "lucide-react";
 
 const adminSidebarLinks = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -129,6 +129,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="px-2 py-1.5 text-xs text-muted-foreground font-semibold truncate">
             {user.email}
           </div>
+
+          {/* Account settings */}
+          <Link
+            href="/admin/account"
+            className={`flex items-center gap-2 w-full px-3 py-2.5 text-xs font-bold border transition-all ${
+              pathname === "/admin/account"
+                ? "bg-primary text-white border-primary"
+                : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
+            }`}
+          >
+            <KeyRound size={14} />
+            Account &amp; Password
+          </Link>
 
           {/* Sign Out */}
           <button
