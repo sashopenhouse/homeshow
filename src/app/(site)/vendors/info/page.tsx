@@ -8,6 +8,11 @@ import Link from "next/link";
 
 const REGFOX_APPLY_URL = "https://kesslerpromotionsinc.regfox.com/2027-home-show-nexus-center-";
 
+// Applications aren't open to the public yet. Flip to true to restore the
+// link to RegFox — the same flag exists in vendors/page.tsx and both need
+// flipping together.
+const APPLICATIONS_OPEN = false;
+
 const infoSections = [
   {
     title: "Load-In & Setup",
@@ -149,15 +154,21 @@ export default function VendorInfoPage() {
             </p>
           </div>
           <div className="shrink-0 w-full md:w-auto mt-4 md:mt-0 md:ml-auto flex flex-col gap-2">
-            <a
-              href={REGFOX_APPLY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 flex items-center justify-center gap-2 rounded-none bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-colors"
-            >
-              View Full Terms &amp; Apply
-              <ExternalLink size={15} />
-            </a>
+            {APPLICATIONS_OPEN ? (
+              <a
+                href={REGFOX_APPLY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 flex items-center justify-center gap-2 rounded-none bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-colors"
+              >
+                View Full Terms &amp; Apply
+                <ExternalLink size={15} />
+              </a>
+            ) : (
+              <span className="px-6 py-3 flex items-center justify-center gap-2 rounded-none bg-muted text-muted-foreground font-bold text-sm cursor-default select-none">
+                Applications open soon
+              </span>
+            )}
             <Link
               href="/contact-us"
               className="px-6 py-3 block text-center rounded-none bg-white border border-border font-bold text-sm text-foreground hover:bg-muted transition-colors"

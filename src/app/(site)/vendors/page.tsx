@@ -9,6 +9,11 @@ import { Sparkles, ExternalLink, ArrowRight, Users, Calendar, DollarSign, CheckC
 const REGFOX_APPLY_URL = "https://kesslerpromotionsinc.regfox.com/2027-home-show-nexus-center-";
 const APPLY_IS_EXTERNAL = REGFOX_APPLY_URL.startsWith("http");
 
+// Applications aren't open to the public yet. Flip to true to restore the
+// "Apply to Exhibit" / "View Full Terms & Apply" links to RegFox — the same
+// flag exists in vendors/info/page.tsx and both need flipping together.
+const APPLICATIONS_OPEN = false;
+
 const highlights = [
   { icon: Users, title: "20,000+ attendees", desc: "Two days of motivated homeowners under one roof." },
   { icon: Calendar, title: "April 24–25, 2027", desc: "Saturday & Sunday at the Utica University Nexus Center." },
@@ -70,18 +75,33 @@ export default function VendorApplicationPage() {
         <div className="fade-up bg-primary rounded-none p-8 md:p-10 flex flex-col items-center text-center gap-5 shadow-lg">
           <h2 className="text-2xl md:text-3xl font-extrabold text-primary-foreground">Ready to secure your booth?</h2>
           <p className="text-primary-foreground/80 max-w-md text-sm">
-            Reserve your exhibition space for the 2027 Home Show through our registration partner,
-            RegFox — booth selection, add-ons, and payment all happen in one application.
+            {APPLICATIONS_OPEN
+              ? "Reserve your exhibition space for the 2027 Home Show through our registration partner, RegFox — booth selection, add-ons, and payment all happen in one application."
+              : "Booth applications for the 2027 Home Show aren't open just yet. Check back soon, or get in touch and we'll let you know the moment they are."}
           </p>
-          <a
-            href={REGFOX_APPLY_URL}
-            target={APPLY_IS_EXTERNAL ? "_blank" : undefined}
-            rel={APPLY_IS_EXTERNAL ? "noopener noreferrer" : undefined}
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-none bg-white text-primary font-bold text-base hover:bg-white/90 transition-all hover:scale-105 active:scale-95 shadow-md"
-          >
-            Apply to Exhibit
-            {APPLY_IS_EXTERNAL ? <ExternalLink size={18} /> : <ArrowRight size={18} />}
-          </a>
+          {APPLICATIONS_OPEN ? (
+            <a
+              href={REGFOX_APPLY_URL}
+              target={APPLY_IS_EXTERNAL ? "_blank" : undefined}
+              rel={APPLY_IS_EXTERNAL ? "noopener noreferrer" : undefined}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-none bg-white text-primary font-bold text-base hover:bg-white/90 transition-all hover:scale-105 active:scale-95 shadow-md"
+            >
+              Apply to Exhibit
+              {APPLY_IS_EXTERNAL ? <ExternalLink size={18} /> : <ArrowRight size={18} />}
+            </a>
+          ) : (
+            <div className="flex flex-col items-center gap-3">
+              <span className="inline-flex items-center gap-2 px-8 py-4 rounded-none bg-white/20 text-primary-foreground font-bold text-base cursor-default select-none">
+                Applications open soon
+              </span>
+              <Link
+                href="/contact-us"
+                className="text-primary-foreground/80 text-sm font-bold underline underline-offset-4 hover:text-primary-foreground transition-colors"
+              >
+                Contact us about exhibiting
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Secondary links */}
