@@ -501,6 +501,27 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
           vendorId = matching.id;
           vendorName = matching.company_name;
         }
+      } else if (vendorName) {
+        // A typed-in name behaves like a pool pick: reuse the pool vendor with
+        // the same name (case-insensitive), or add it to the pool, so the booth
+        // is linked by vendor_id and counts everywhere a pool vendor does.
+        const existing = vendors.find((v) => v.company_name.trim().toLowerCase() === vendorName.toLowerCase());
+        if (existing) {
+          vendorId = existing.id;
+          vendorName = existing.company_name;
+        } else {
+          const { data: created, error: createErr } = await supabase
+            .from("vendors")
+            .insert([{ company_name: vendorName }])
+            .select("id, company_name")
+            .single();
+          if (createErr) throw createErr;
+          vendorId = created.id;
+          setVendors((prev) =>
+            [...prev, created].sort((a, b) => a.company_name.localeCompare(b.company_name))
+          );
+        }
+        setSelectedVendorId(vendorId ?? "");
       }
 
       const hasValue = !!vendorName;
