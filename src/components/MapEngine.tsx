@@ -196,11 +196,13 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
       // exist (pre-migration), without ever exposing notes publicly.
       const colSets = adminMode
         ? [
+            "id, booth_number, coordinates, floor, vendor_id, vendor_name, status, notes, vendors ( company_name, website_url, industry_category )",
             "id, booth_number, coordinates, floor, vendor_id, status, notes, vendors ( company_name, website_url, industry_category )",
             "id, booth_number, coordinates, floor, vendor_id, status, vendors ( company_name, website_url, industry_category )",
             "id, booth_number, coordinates, vendor_id, status, vendors ( company_name, website_url, industry_category )"
           ]
         : [
+            "id, booth_number, coordinates, floor, vendor_id, vendor_name, status, vendors ( company_name, website_url, industry_category )",
             "id, booth_number, coordinates, floor, vendor_id, status, vendors ( company_name, website_url, industry_category )",
             "id, booth_number, coordinates, vendor_id, status, vendors ( company_name, website_url, industry_category )"
           ];
@@ -226,6 +228,9 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
               website_url: b.vendors.website_url ?? null,
               industry_category: b.vendors.industry_category ?? null
             };
+          } else if (b.vendor_name) {
+            // Typed-in name with no linked vendor-pool row.
+            loadedAssignments[b.booth_number] = { vendor_name: b.vendor_name };
           }
           const box = parseBbox(b.coordinates);
           if (box) {
@@ -512,6 +517,7 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
           .update({
             status: hasValue ? "sold" : "available",
             vendor_id: vendorId,
+            vendor_name: hasValue ? vendorName : null,
             updated_at: new Date().toISOString()
           })
           .eq("booth_number", selectedStall.number);
@@ -531,6 +537,7 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
               floor: selectedStall.floor,
               status: hasValue ? "sold" : "available",
               vendor_id: vendorId,
+              vendor_name: hasValue ? vendorName : null,
               created_at: new Date().toISOString()
             }
           ]);
@@ -564,7 +571,7 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
     try {
       const { error } = await supabase
         .from("booths")
-        .update({ status: "available", vendor_id: null, updated_at: new Date().toISOString() })
+        .update({ status: "available", vendor_id: null, vendor_name: null, updated_at: new Date().toISOString() })
         .eq("booth_number", selectedStall.number);
       if (error) throw error;
 
