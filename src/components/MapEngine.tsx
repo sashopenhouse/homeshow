@@ -155,6 +155,10 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
   const [vendorInputText, setVendorInputText] = useState<string>("");
   const [numberInput, setNumberInput] = useState<string>("");
   const [notesInput, setNotesInput] = useState<string>("");
+  // Contact details for a vendor typed in on the map that isn't in the pool
+  // yet — the same fields a RegFox registration feeds into the pool.
+  const emptyNewVendor = { contact_email: "", contact_phone: "", website_url: "" };
+  const [newVendorInput, setNewVendorInput] = useState(emptyNewVendor);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dbBacked, setDbBacked] = useState(false);
@@ -173,6 +177,10 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
   // Public (non-admin) booth info modal
   const viewStall = viewNumber ? stalls.find((s) => s.number === viewNumber) ?? null : null;
   const viewAssignment = viewNumber ? assignments[viewNumber] : undefined;
+  // The typed name doesn't match any pool vendor, so assigning will create one.
+  const typedName = vendorInputText.trim().toLowerCase();
+  const isNewVendor =
+    !selectedVendorId && !!typedName && !vendors.some((v) => v.company_name.trim().toLowerCase() === typedName);
 
   // Refs give drag handlers the latest state without stale closures.
   const stallsRef = useRef<Stall[]>(stalls);
@@ -270,6 +278,7 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
     setSelectedNumber(stall.number);
     setNumberInput(stall.number);
     setNotesInput(stall.notes || "");
+    setNewVendorInput(emptyNewVendor);
     const existing = assignments[stall.number];
     if (existing) {
       setSelectedVendorId(existing.id || "");
@@ -512,11 +521,19 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
         } else {
           const { data: created, error: createErr } = await supabase
             .from("vendors")
-            .insert([{ company_name: vendorName }])
+            .insert([
+              {
+                company_name: vendorName,
+                contact_email: newVendorInput.contact_email.trim() || null,
+                contact_phone: newVendorInput.contact_phone.trim() || null,
+                website_url: newVendorInput.website_url.trim() || null
+              }
+            ])
             .select("id, company_name")
             .single();
           if (createErr) throw createErr;
           vendorId = created.id;
+          setNewVendorInput(emptyNewVendor);
           setVendors((prev) =>
             [...prev, created].sort((a, b) => a.company_name.localeCompare(b.company_name))
           );
@@ -993,6 +1010,33 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
                   placeholder="Type vendor name..."
                 />
               </div>
+
+              {isNewVendor && (
+                <div className="space-y-2 border-l-2 border-primary/30 pl-3">
+                  <p className="text-[10px] font-bold text-primary uppercase">New vendor — will be added to the pool</p>
+                  <input
+                    type="email"
+                    value={newVendorInput.contact_email}
+                    onChange={(e) => setNewVendorInput((v) => ({ ...v, contact_email: e.target.value }))}
+                    placeholder="Contact email"
+                    className="w-full p-2.5 rounded-none border border-border bg-background text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                  <input
+                    type="tel"
+                    value={newVendorInput.contact_phone}
+                    onChange={(e) => setNewVendorInput((v) => ({ ...v, contact_phone: e.target.value }))}
+                    placeholder="Contact phone"
+                    className="w-full p-2.5 rounded-none border border-border bg-background text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                  <input
+                    type="url"
+                    value={newVendorInput.website_url}
+                    onChange={(e) => setNewVendorInput((v) => ({ ...v, website_url: e.target.value }))}
+                    placeholder="Website (https://…)"
+                    className="w-full p-2.5 rounded-none border border-border bg-background text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              )}
 
               <div className="flex gap-2 pt-1.5">
                 <button

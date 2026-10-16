@@ -21,6 +21,8 @@ interface Vendor {
   company_name: string;
   website_url: string | null;
   industry_category: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
 }
 
 type Mapping = { company: number | null; website: number | null; category: number | null };
@@ -79,7 +81,7 @@ export default function AdminVendorPoolPage() {
   const [query, setQuery] = useState("");
 
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState({ company_name: "", website_url: "", industry_category: "" });
+  const [editForm, setEditForm] = useState({ company_name: "", website_url: "", industry_category: "", contact_email: "", contact_phone: "" });
   const [rowBusy, setRowBusy] = useState<string | null>(null);
 
   const [headers, setHeaders] = useState<string[]>([]);
@@ -94,7 +96,7 @@ export default function AdminVendorPoolPage() {
       const [vRes, bRes] = await Promise.all([
         supabase
           .from("vendors")
-          .select("id, company_name, website_url, industry_category")
+          .select("id, company_name, website_url, industry_category, contact_email, contact_phone")
           .order("company_name", { ascending: true }),
         supabase.from("booths").select("vendor_id").not("vendor_id", "is", null),
       ]);
@@ -204,6 +206,8 @@ export default function AdminVendorPoolPage() {
       company_name: v.company_name,
       website_url: v.website_url || "",
       industry_category: v.industry_category || "",
+      contact_email: v.contact_email || "",
+      contact_phone: v.contact_phone || "",
     });
   };
 
@@ -215,6 +219,8 @@ export default function AdminVendorPoolPage() {
         company_name: editForm.company_name.trim(),
         website_url: editForm.website_url.trim() || null,
         industry_category: editForm.industry_category.trim() || null,
+        contact_email: editForm.contact_email.trim() || null,
+        contact_phone: editForm.contact_phone.trim() || null,
         updated_at: new Date().toISOString(),
       };
       const { error } = await supabase.from("vendors").update(patch).eq("id", id);
@@ -503,6 +509,22 @@ export default function AdminVendorPoolPage() {
                                 placeholder="https://…"
                                 className="w-full p-2 rounded-none border border-border bg-background text-xs font-mono focus:outline-none focus:ring-1 focus:ring-primary"
                               />
+                              <div className="flex gap-2 mt-2">
+                                <input
+                                  type="email"
+                                  value={editForm.contact_email}
+                                  onChange={(e) => setEditForm((f) => ({ ...f, contact_email: e.target.value }))}
+                                  placeholder="Contact email"
+                                  className="w-full p-2 rounded-none border border-border bg-background text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                                />
+                                <input
+                                  type="tel"
+                                  value={editForm.contact_phone}
+                                  onChange={(e) => setEditForm((f) => ({ ...f, contact_phone: e.target.value }))}
+                                  placeholder="Contact phone"
+                                  className="w-full p-2 rounded-none border border-border bg-background text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                                />
+                              </div>
                             </td>
                             <td className="p-2 pr-4 text-right whitespace-nowrap">
                               <button
@@ -524,7 +546,14 @@ export default function AdminVendorPoolPage() {
                           </>
                         ) : (
                           <>
-                            <td className="p-3 pl-4 font-bold text-foreground">{v.company_name}</td>
+                            <td className="p-3 pl-4">
+                              <div className="font-bold text-foreground">{v.company_name}</div>
+                              {(v.contact_email || v.contact_phone) && (
+                                <div className="text-[11px] text-muted-foreground mt-0.5">
+                                  {[v.contact_email, v.contact_phone].filter(Boolean).join(" · ")}
+                                </div>
+                              )}
+                            </td>
                             <td className="p-3 text-muted-foreground">{v.industry_category || "—"}</td>
                             <td className="p-3">
                               {v.website_url ? (
