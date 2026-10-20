@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
-import { LayoutDashboard, FileText, BarChart3, ArrowLeft, Shield, Award, LogOut, Loader2, Megaphone, Map as MapIcon, Building2, Mail, Inbox, KeyRound } from "lucide-react";
+import { LayoutDashboard, FileText, BarChart3, ArrowLeft, Shield, Award, LogOut, Loader2, Megaphone, Map as MapIcon, Building2, Mail, Inbox, KeyRound, Gift } from "lucide-react";
 
 const adminSidebarLinks = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -16,6 +16,7 @@ const adminSidebarLinks = [
   { href: "/admin/vendors", label: "Vendor Pool", icon: Building2 },
   { href: "/admin/booths", label: "Booth Map", icon: MapIcon },
   { href: "/admin/sponsors", label: "Sponsors", icon: Award },
+  { href: "/admin/contest", label: "Contest Entries", icon: Gift },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
