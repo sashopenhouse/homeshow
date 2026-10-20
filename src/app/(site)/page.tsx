@@ -5,11 +5,12 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import Link from "next/link";
 import Image from "next/image";
-import { Ticket, Building2, Map, Home, TreePine, Music, Gift, Star } from "lucide-react";
+import { Ticket, Building2, Map, ShoppingBag, Smile, Music, Gift, Star } from "lucide-react";
+import ContestEntryDialog from "@/components/ContestEntryDialog";
 
 const highlights = [
-  { icon: TreePine, title: "Zoomobile", desc: "Live exotic animals & interactive wildlife exhibits for the whole family." },
-  { icon: Home, title: "Children's Museum", desc: "Immersive hands-on learning experiences designed for young minds." },
+  { icon: ShoppingBag, title: "Shop & Plan", desc: "Explore and meet with hundreds of vendors." },
+  { icon: Smile, title: "Fun for Kids", desc: "Bring the whole family, there's even fun for the kids!" },
   { icon: Music, title: "Live Music", desc: "Local and regional artists performing throughout the weekend." },
   { icon: Gift, title: "Giveaways", desc: "Door prizes, vendor raffles, and grand prizes every hour." },
 ];
@@ -24,6 +25,7 @@ const stats = [
 export default function HomePage() {
   const container = useRef<HTMLDivElement>(null);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [contestOpen, setContestOpen] = useState(false);
 
   useEffect(() => {
     const targetDate = new Date("2027-04-24T09:00:00").getTime();
@@ -253,16 +255,22 @@ export default function HomePage() {
               Don't miss your chance to win incredible prizes throughout the weekend!
             </p>
           </div>
-          {/* Tasting Giveaway */}
-          <div className="relative w-full max-w-3xl mx-auto aspect-[1200/630] bg-muted overflow-hidden border border-border/50">
+          {/* Spring Home Show Giveaway — opens the contest entry form */}
+          <button
+            type="button"
+            onClick={() => setContestOpen(true)}
+            aria-label="Enter to win 4 tickets, a $100 Cliff's gift card and $25 to the tasting area"
+            className="relative block w-full max-w-5xl mx-auto aspect-[1890/630] bg-muted overflow-hidden border border-border/50 cursor-pointer transition-shadow hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
             <Image
-              src="/giveaways/tasting-giveaway-banner.png"
-              alt="Food & Beverage Tasting Giveaway"
+              src="/giveaways/spring-contest-banner.png"
+              alt="Enter to win 4 tickets, a $100 Cliff's gift card and $25 to the tasting area at the Spring Home Show, April 24 & 25"
               fill
-              sizes="(max-width: 768px) 100vw, 768px"
+              sizes="(max-width: 1024px) 100vw, 1024px"
               className="object-contain"
             />
-          </div>
+          </button>
+          <ContestEntryDialog open={contestOpen} onOpenChange={setContestOpen} />
         </div>
       </section>
 
