@@ -132,7 +132,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="group flex items-center gap-1"
             >
-              <Image src="/sponsors/new-york-sash-logo.png" alt="New York Sash" width={1319} height={555}className="h-8 w-auto object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all" />
+              <Image src="/sponsors/new-york-sash-logo.png" alt="New York Sash" width={1319} height={555} className="h-8 w-auto object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all" />
               <ArrowUpRight size={12} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </a>
           </div>

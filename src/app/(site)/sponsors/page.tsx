@@ -23,7 +23,7 @@ const defaultSponsors: Sponsor[] = [
     name: "New York Sash",
     description: "Utica's premier home improvement company specializing in windows, siding, and baths.",
     tier: "Presenting Sponsor",
-    logo_url: "/sponsors/nysash.png",
+    logo_url: "/sponsors/new-york-sash-logo.png",
     order_index: 0
   },
   {
@@ -31,7 +31,6 @@ const defaultSponsors: Sponsor[] = [
     name: "Utica University Nexus Center",
     description: "The state-of-the-art sports and event facility hosting this year's Home Show.",
     tier: "Major Partners",
-    logo_url: "/sponsors/nexus.png",
     order_index: 1
   },
   {
@@ -39,7 +38,6 @@ const defaultSponsors: Sponsor[] = [
     name: "Kessler Promotions",
     description: "Leading event organizers bringing communities together.",
     tier: "Major Partners",
-    logo_url: "/sponsors/kessler.png",
     order_index: 2
   }
 ];
@@ -143,6 +141,8 @@ export default function SponsorsPage() {
                                 src={sponsor.logo_url} 
                                 alt={`${sponsor.name} logo`}
                                 fill
+                                // Logo URLs typed into the admin can point at any site; load those as-is.
+                                unoptimized={!sponsor.logo_url.startsWith("/")}
                                 className="object-contain object-left"
                               />
                             </div>
