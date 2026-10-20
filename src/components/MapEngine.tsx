@@ -5,7 +5,7 @@ import { MapContainer, Polygon, Marker, Rectangle, useMap, useMapEvents } from "
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { supabase } from "@/lib/supabase";
-import { X, Check, Award, Plus, Trash2, Move, ExternalLink } from "lucide-react";
+import { X, Check, Award, Plus, Trash2, Move, ExternalLink, Undo2 } from "lucide-react";
 import { RINK2, RINK3, stallsData, type StallData } from "@/data/boothLayout";
 
 const MAP_H = 1800;
@@ -15,6 +15,12 @@ const MIN_SIZE = 24; // minimum booth width/height in design units
 // A booth in editable state also carries its DB row id (when it came from the DB)
 // and optional internal admin notes.
 type Stall = StallData & { id?: string; notes?: string };
+
+// The vendor shown on a booth (keyed by booth number in MapEngine state).
+type Assignment = { id?: string; vendor_name: string; website_url?: string | null; industry_category?: string | null };
+
+// How long the "Undo" toast stays up after deleting a booth.
+const UNDO_MS = 15000;
 
 // Non-booth areas drawn on the plan. `tone` picks the palette: "green" for
 // show floor amenities, "blue" for the passport drop-off.
@@ -162,6 +168,10 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dbBacked, setDbBacked] = useState(false);
+  // The most recently deleted booth (and its vendor), kept briefly so the
+  // delete can be undone from the toast. Cleared after UNDO_MS.
+  const [lastDeleted, setLastDeleted] = useState<{ stall: Stall; assignment?: Assignment } | null>(null);
+  const [undoing, setUndoing] = useState(false);
   // Live map zoom. In CRS.Simple one design unit is 2^zoom screen pixels, so
   // `k` converts booth geometry into the on-screen size its label must fit.
   const [zoom, setZoom] = useState(-1.5);
@@ -481,6 +491,7 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
       const { error } = target.id ? await q.eq("id", target.id) : await q.eq("booth_number", target.number);
       if (error) throw error;
 
+      setLastDeleted({ stall: target, assignment: assignments[target.number] });
       setStalls((prev) => prev.filter((s) => s.number !== target.number));
       setAssignments((prev) => {
         const next = { ...prev };
@@ -493,6 +504,53 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
       alert("Could not delete booth.");
     }
   };
+
+  // Re-insert the last deleted booth with its original id, geometry, floor,
+  // notes and vendor, so it comes back exactly as it was.
+  const undoDelete = async () => {
+    if (!lastDeleted) return;
+    const { stall, assignment } = lastDeleted;
+    setUndoing(true);
+    try {
+      const { data, error } = await supabase
+        .from("booths")
+        .insert([
+          {
+            ...(stall.id ? { id: stall.id } : {}),
+            booth_number: stall.number,
+            coordinates: {
+              x1: Math.round(stall.x1),
+              y1: Math.round(stall.y1),
+              x2: Math.round(stall.x2),
+              y2: Math.round(stall.y2)
+            },
+            floor: stall.floor,
+            notes: stall.notes || null,
+            status: assignment ? "sold" : "available",
+            vendor_id: assignment?.id ?? null,
+            vendor_name: assignment?.vendor_name ?? null
+          }
+        ])
+        .select("id")
+        .single();
+      if (error) throw error;
+
+      setStalls((prev) => [...prev, { ...stall, id: data?.id ?? stall.id }]);
+      if (assignment) setAssignments((prev) => ({ ...prev, [stall.number]: assignment }));
+      setLastDeleted(null);
+    } catch (err) {
+      console.error("Failed to undo booth delete:", err);
+      alert(`Could not restore booth ${stall.number}. Another booth may already use that number.`);
+    } finally {
+      setUndoing(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!lastDeleted) return;
+    const t = setTimeout(() => setLastDeleted(null), UNDO_MS);
+    return () => clearTimeout(t);
+  }, [lastDeleted]);
 
   // ---- Vendor assignment (existing behavior) ------------------------------
 
@@ -831,6 +889,24 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
                 Showing the built-in default layout — run the booth-layout migration in Supabase to save edits.
               </span>
             )}
+          </div>
+        )}
+
+        {/* Undo toast for a just-deleted booth (admin only) */}
+        {adminMode && lastDeleted && (
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] bg-foreground text-background shadow-2xl rounded-none px-4 py-3 flex items-center gap-4 pointer-events-auto text-xs font-semibold">
+            <span>Booth {lastDeleted.stall.number} deleted</span>
+            <button
+              onClick={undoDelete}
+              disabled={undoing}
+              className="inline-flex items-center gap-1 font-bold uppercase tracking-wide text-[#8fd18f] hover:underline disabled:opacity-50"
+            >
+              <Undo2 size={14} />
+              {undoing ? "Restoring…" : "Undo"}
+            </button>
+            <button onClick={() => setLastDeleted(null)} aria-label="Dismiss" className="opacity-70 hover:opacity-100">
+              <X size={14} />
+            </button>
           </div>
         )}
 
