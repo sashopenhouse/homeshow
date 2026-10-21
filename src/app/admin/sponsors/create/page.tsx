@@ -105,6 +105,8 @@ export default function AdminCreateSponsorPage() {
               >
                 <option>Presenting Sponsor</option>
                 <option>Major Partners</option>
+                <option>Character Breakfast Sponsor</option>
+                <option>Vendor Breakfast Sponsor</option>
                 <option>Support Sponsors</option>
                 <option>Media Partners</option>
               </select>

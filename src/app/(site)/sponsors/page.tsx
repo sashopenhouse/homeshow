@@ -42,7 +42,14 @@ const defaultSponsors: Sponsor[] = [
   }
 ];
 
-const tierList = ["Presenting Sponsor", "Major Partners", "Support Sponsors", "Media Partners"];
+const tierList = [
+  "Presenting Sponsor",
+  "Major Partners",
+  "Character Breakfast Sponsor",
+  "Vendor Breakfast Sponsor",
+  "Support Sponsors",
+  "Media Partners",
+];
 
 export default function SponsorsPage() {
   const container = useRef<HTMLDivElement>(null);
