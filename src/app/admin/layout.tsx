@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
-import { LayoutDashboard, FileText, BarChart3, ArrowLeft, Shield, Award, LogOut, Loader2, Megaphone, Map as MapIcon, Building2, Mail, Inbox, KeyRound, Gift } from "lucide-react";
+import { LayoutDashboard, FileText, BarChart3, ArrowLeft, Shield, Award, LogOut, Loader2, Megaphone, Map as MapIcon, Building2, Mail, Inbox, KeyRound, Gift, Users, Clock } from "lucide-react";
 
 const adminSidebarLinks = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -17,18 +17,21 @@ const adminSidebarLinks = [
   { href: "/admin/booths", label: "Booth Map", icon: MapIcon },
   { href: "/admin/sponsors", label: "Sponsors", icon: Award },
   { href: "/admin/contest", label: "Contest Entries", icon: Gift },
+  { href: "/admin/users", label: "Admin Users", icon: Users },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
 // Routes under /admin that must render without the auth guard or sidebar
-// (login and the password-recovery flow, which relies on a temporary session).
-const PUBLIC_ADMIN_ROUTES = ["/admin/login", "/admin/forgot-password", "/admin/reset-password"];
+// (login, sign-up and the password-recovery flow, which relies on a temporary session).
+const PUBLIC_ADMIN_ROUTES = ["/admin/login", "/admin/signup", "/admin/forgot-password", "/admin/reset-password"];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [checking, setChecking] = useState(true);
+  // null while unknown; false shows the awaiting-approval screen.
+  const [approved, setApproved] = useState<boolean | null>(null);
 
   const isPublicRoute = PUBLIC_ADMIN_ROUTES.some((route) => pathname.startsWith(route));
 
@@ -60,6 +63,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => subscription.unsubscribe();
   }, [pathname, router, isPublicRoute]);
 
+  // New sign-ups can't use the dashboard until an existing admin approves them.
+  // The database enforces this too; this just shows them why everything is empty.
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("admin_users")
+      .select("approved")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error) {
+          // Before supabase_migration_admin_signup.sql is run the table doesn't exist
+          // and every signed-in user is an admin, as before.
+          console.error("Error checking admin approval:", error);
+          setApproved(true);
+        } else {
+          setApproved(!!data?.approved);
+        }
+      });
+  }, [user]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/admin/login");
@@ -71,7 +95,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   // Show spinner while checking auth
-  if (checking) {
+  if (checking || (user && approved === null)) {
     return (
       <div className="min-h-screen bg-[#fafafa] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-muted-foreground">
@@ -84,6 +108,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // If no user after check, render nothing (redirect is in progress)
   if (!user) return null;
+
+  if (!approved) {
+    return (
+      <main className="admin-shell min-h-screen bg-[#fafafa] flex items-center justify-center p-6">
+        <div className="w-full max-w-md bg-white border border-border shadow-sm p-8 rounded-none text-center space-y-4">
+          <Clock size={40} className="text-primary mx-auto" />
+          <h1 className="text-lg font-bold text-foreground">Awaiting Approval</h1>
+          <p className="text-sm text-muted-foreground">
+            Your account (<span className="font-semibold text-foreground">{user.email}</span>) has been
+            created, but an existing admin needs to approve it before you can use the dashboard.
+          </p>
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold border border-border text-destructive hover:bg-destructive/5 transition-all rounded-none"
+          >
+            <LogOut size={14} />
+            Sign Out
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <div className="admin-shell min-h-screen bg-[#fafafa] flex flex-col md:flex-row text-foreground font-sans">

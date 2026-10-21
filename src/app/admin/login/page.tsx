@@ -132,7 +132,13 @@ export default function AdminLoginPage() {
           </form>
         </div>
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
+        <p className="text-center text-sm text-muted-foreground mt-6">
+          Need an account?{" "}
+          <Link href="/admin/signup" className="font-semibold text-primary hover:underline">
+            Request access
+          </Link>
+        </p>
+        <p className="text-center text-xs text-muted-foreground mt-2">
           Admin access only. Unauthorized access is prohibited.
         </p>
       </div>
