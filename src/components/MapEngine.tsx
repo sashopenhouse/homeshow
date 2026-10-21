@@ -151,7 +151,9 @@ function MapRefSetter({
   return null;
 }
 
-export default function MapEngine({ admin = false }: { admin?: boolean }) {
+// `refreshMs` re-reads the booths on an interval (and when the tab regains focus)
+// so a long-open view, such as the embed on a partner site, tracks admin edits.
+export default function MapEngine({ admin = false, refreshMs }: { admin?: boolean; refreshMs?: number }) {
   const [assignments, setAssignments] = useState<Record<string, { id?: string; vendor_name: string; website_url?: string | null; industry_category?: string | null }>>({});
   const [vendors, setVendors] = useState<{ id: string; company_name: string }[]>([]);
   const [stalls, setStalls] = useState<Stall[]>(stallsData);
@@ -283,6 +285,19 @@ export default function MapEngine({ admin = false }: { admin?: boolean }) {
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (!refreshMs) return;
+    const timer = setInterval(loadData, refreshMs);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") loadData();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [refreshMs]);
 
   const handleSelectStall = (stall: Stall) => {
     setSelectedNumber(stall.number);
