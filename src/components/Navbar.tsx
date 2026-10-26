@@ -7,6 +7,7 @@ import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Menu, X, ChevronDown } from "lucide-react";
+import AnnouncementTicker from "./AnnouncementTicker";
 
 interface NavItem {
   label: string;
@@ -77,6 +78,7 @@ export default function Navbar() {
           scrolled ? "shadow-sm" : ""
         }`}
       >
+        <AnnouncementTicker />
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center group">
