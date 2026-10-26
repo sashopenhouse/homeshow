@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ArrowLeft, Calendar, Store, Tag, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import ShareButtons from "@/components/ShareButtons";
 
 interface VendorPost {
   id: string;
@@ -175,6 +176,11 @@ export default function VendorPostDetailPage({ params }: { params: Promise<{ id:
         {/* Content Body */}
         <div className="prose prose-primary max-w-none text-foreground leading-relaxed space-y-6 text-base md:text-lg whitespace-pre-line">
           {post.body}
+        </div>
+
+        {/* Share */}
+        <div className="mt-12 pt-6 border-t border-border">
+          <ShareButtons title={post.title} text={post.vendor_name ? `${post.vendor_name}: ${post.title}` : post.title} />
         </div>
       </article>
     </main>

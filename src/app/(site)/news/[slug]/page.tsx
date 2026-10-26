@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { ArrowLeft, Calendar, User, Rss } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import ShareButtons from "@/components/ShareButtons";
 
 interface Post {
   title: string;
@@ -171,6 +172,11 @@ export default function PostDetailsPage({ params }: { params: Promise<{ slug: st
           {post.content.split("\n\n").map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
+        </div>
+
+        {/* Share */}
+        <div className="mt-12 pt-6 border-t border-border">
+          <ShareButtons title={post.title} text={post.excerpt} />
         </div>
       </article>
     </main>
