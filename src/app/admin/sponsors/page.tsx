@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { absoluteUrl } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { Plus, Trash2, Award, Building2 } from "lucide-react";
 import Link from "next/link";
@@ -11,6 +12,7 @@ interface Sponsor {
   description: string;
   tier: string;
   logo_url?: string;
+  website_url?: string | null;
   order_index: number;
 }
 
@@ -104,7 +106,14 @@ export default function AdminManageSponsorsPage() {
                         <div className="w-8 h-8 rounded-none border bg-muted flex items-center justify-center text-muted-foreground">
                           <Building2 size={14} />
                         </div>
-                        <span>{sponsor.name}</span>
+                        <div className="flex flex-col">
+                          <span>{sponsor.name}</span>
+                          {sponsor.website_url && (
+                            <a href={absoluteUrl(sponsor.website_url) ?? "#"} target="_blank" rel="noopener noreferrer" className="text-[11px] font-normal text-primary hover:underline truncate max-w-[220px]">
+                              {sponsor.website_url.replace(/^https?:\/\//, "")}
+                            </a>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="p-4">

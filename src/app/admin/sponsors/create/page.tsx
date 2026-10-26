@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { absoluteUrl } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -14,6 +15,7 @@ export default function AdminCreateSponsorPage() {
   const [tier, setTier] = useState("Major Partners");
   const [description, setDescription] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
   const [orderIndex, setOrderIndex] = useState(0);
   
   const [submitting, setSubmitting] = useState(false);
@@ -36,6 +38,7 @@ export default function AdminCreateSponsorPage() {
           tier,
           description,
           logo_url: logoUrl || null,
+          website_url: absoluteUrl(websiteUrl),
           order_index: Number(orderIndex) || 0,
           created_at: new Date().toISOString()
         }
@@ -134,6 +137,19 @@ export default function AdminCreateSponsorPage() {
               className="w-full p-3 rounded-none border bg-background text-xs font-mono text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary border-border"
               placeholder="e.g. /sponsors/nysash.png"
             />
+          </div>
+
+          {/* Website */}
+          <div>
+            <label className="text-sm font-medium mb-1.5 block text-foreground">Website (Optional)</label>
+            <input
+              type="text"
+              value={websiteUrl}
+              onChange={(e) => setWebsiteUrl(e.target.value)}
+              className="w-full p-3 rounded-none border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-primary border-border"
+              placeholder="e.g. www.newyorksash.com"
+            />
+            <p className="text-xs text-muted-foreground mt-1.5">The sponsor card on the public page links here. https:// is added automatically.</p>
           </div>
 
           {/* Description */}

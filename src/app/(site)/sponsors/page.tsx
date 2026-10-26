@@ -3,10 +3,11 @@
 import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { Award, Building2 } from "lucide-react";
+import { Award, Building2, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
+import { absoluteUrl } from "@/lib/utils";
 
 interface Sponsor {
   id: string;
@@ -14,6 +15,7 @@ interface Sponsor {
   description: string;
   tier: string;
   logo_url?: string;
+  website_url?: string | null;
   order_index: number;
 }
 
@@ -24,6 +26,7 @@ const defaultSponsors: Sponsor[] = [
     description: "Utica's premier home improvement company specializing in windows, siding, and baths.",
     tier: "Presenting Sponsor",
     logo_url: "/sponsors/new-york-sash-logo.png",
+    website_url: "https://www.newyorksash.com",
     order_index: 0
   },
   {
@@ -136,11 +139,10 @@ export default function SponsorsPage() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {tierSponsors.map((sponsor) => (
-                      <div
-                        key={sponsor.id}
-                        className="sponsor-card bg-white border border-border rounded-none p-8 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300 flex flex-col justify-between"
-                      >
+                    {tierSponsors.map((sponsor) => {
+                      const href = absoluteUrl(sponsor.website_url);
+                      const cardClass = "sponsor-card bg-white border border-border rounded-none p-8 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300 flex flex-col justify-between";
+                      const body = (
                         <div>
                           {sponsor.logo_url ? (
                             <div className="h-24 relative mb-6">
@@ -159,11 +161,28 @@ export default function SponsorsPage() {
                               <span className="ml-2 font-bold text-muted-foreground/80">{sponsor.name}</span>
                             </div>
                           )}
-                          <h3 className="text-xl font-bold text-foreground mb-2">{sponsor.name}</h3>
+                          <h3 className="text-xl font-bold text-foreground mb-2 inline-flex items-center gap-2">
+                            {sponsor.name}
+                            {href && <ExternalLink size={14} className="text-muted-foreground group-hover:text-primary transition-colors" />}
+                          </h3>
                           <p className="text-muted-foreground text-sm leading-relaxed">{sponsor.description}</p>
+                          {href && (
+                            <span className="mt-4 inline-block text-xs font-bold text-primary">
+                              {href.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                            </span>
+                          )}
                         </div>
-                      </div>
-                    ))}
+                      );
+                      return href ? (
+                        <a key={sponsor.id} href={href} target="_blank" rel="noopener noreferrer" className={`${cardClass} group`}>
+                          {body}
+                        </a>
+                      ) : (
+                        <div key={sponsor.id} className={cardClass}>
+                          {body}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
