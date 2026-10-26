@@ -15,6 +15,7 @@ import {
   Trash2,
   Save,
 } from "lucide-react";
+import { absoluteUrl } from "@/lib/utils";
 
 interface Vendor {
   id: string;
@@ -162,7 +163,7 @@ export default function AdminVendorPoolPage() {
     return dataRows
       .map((r) => ({
         company_name: (r[mapping.company as number] || "").trim(),
-        website_url: mapping.website != null ? (r[mapping.website] || "").trim() || null : null,
+        website_url: mapping.website != null ? absoluteUrl(r[mapping.website]) : null,
         industry_category: mapping.category != null ? (r[mapping.category] || "").trim() || null : null,
       }))
       .filter((v) => v.company_name);
@@ -217,7 +218,7 @@ export default function AdminVendorPoolPage() {
     try {
       const patch = {
         company_name: editForm.company_name.trim(),
-        website_url: editForm.website_url.trim() || null,
+        website_url: absoluteUrl(editForm.website_url),
         industry_category: editForm.industry_category.trim() || null,
         contact_email: editForm.contact_email.trim() || null,
         contact_phone: editForm.contact_phone.trim() || null,
@@ -558,7 +559,7 @@ export default function AdminVendorPoolPage() {
                             <td className="p-3">
                               {v.website_url ? (
                                 <a
-                                  href={v.website_url}
+                                  href={absoluteUrl(v.website_url) ?? "#"}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-primary hover:underline inline-flex items-center gap-1"

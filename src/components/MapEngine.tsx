@@ -7,6 +7,7 @@ import "leaflet/dist/leaflet.css";
 import { supabase } from "@/lib/supabase";
 import { X, Check, Award, Plus, Trash2, Move, ExternalLink, Undo2 } from "lucide-react";
 import { RINK2, RINK3, stallsData, type StallData } from "@/data/boothLayout";
+import { absoluteUrl } from "@/lib/utils";
 
 const MAP_H = 1800;
 const yy = (y: number) => MAP_H - y;
@@ -959,7 +960,7 @@ export default function MapEngine({ admin = false, refreshMs }: { admin?: boolea
                     )}
                     {viewAssignment.website_url && (
                       <a
-                        href={viewAssignment.website_url}
+                        href={absoluteUrl(viewAssignment.website_url) ?? "#"}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-5 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-none bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-all"

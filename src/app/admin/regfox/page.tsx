@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { mapRegistrant, type RegfoxRegistrant } from "@/lib/regfox-mapper";
 import { Inbox, Check, X, ChevronDown, ChevronUp, ExternalLink, RefreshCw } from "lucide-react";
+import { absoluteUrl } from "@/lib/utils";
 
 interface RegfoxRegistration {
   id: string;
@@ -79,7 +80,7 @@ function vendorFieldsFrom(values: EditValues) {
     contact_name: values.contact_name.trim() || null,
     contact_email: values.contact_email.trim() || null,
     contact_phone: values.contact_phone.trim() || null,
-    website_url: values.website_url.trim() || null,
+    website_url: absoluteUrl(values.website_url),
     address: values.address.trim() || null,
     booth_choices: parseBoothChoices(values.booth_choices),
     is_sponsor: values.is_sponsor,

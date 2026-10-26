@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Search, ExternalLink, MapPin, Store } from "lucide-react";
+import { absoluteUrl } from "@/lib/utils";
 
 interface Vendor {
   id: string;
@@ -148,7 +149,7 @@ export default function VendorDirectory() {
                 </div>
                 {v.website_url ? (
                   <a
-                    href={v.website_url}
+                    href={absoluteUrl(v.website_url) ?? "#"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-bold text-sm text-foreground hover:text-primary transition-colors inline-flex items-center gap-1.5 leading-snug"

@@ -1,4 +1,5 @@
 // Pure mapper from a RegFox registrant object to the mapped_* columns on
+import { absoluteUrl } from "@/lib/utils";
 // `regfox_registrations`. No server-only imports: the admin page also uses
 // it client-side to re-run the mapping from a stored raw_payload.
 //
@@ -129,7 +130,7 @@ export function mapRegistrant(registrant: RegfoxRegistrant | null | undefined): 
     mapped_contact_name: contactName,
     mapped_contact_email: toStr(getField(data, "email")?.value) ?? toStr(registrant?.orderEmail),
     mapped_contact_phone: toStr(getField(data, "phone")?.value),
-    mapped_website_url: toStr(getField(data, "website")?.value),
+    mapped_website_url: absoluteUrl(toStr(getField(data, "website")?.value)),
     mapped_ticket_type: toStr(chosenOption(getField(data, "registrationOptions"))?.label),
     mapped_address: address,
     mapped_booth_choices: boothChoices.length ? boothChoices : null,
