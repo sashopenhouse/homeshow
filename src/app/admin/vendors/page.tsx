@@ -16,6 +16,7 @@ import {
   Save,
 } from "lucide-react";
 import { absoluteUrl } from "@/lib/utils";
+import CategorySelect from "@/components/CategorySelect";
 
 interface Vendor {
   id: string;
@@ -496,10 +497,9 @@ export default function AdminVendorPoolPage() {
                               />
                             </td>
                             <td className="p-2">
-                              <input
+                              <CategorySelect
                                 value={editForm.industry_category}
-                                onChange={(e) => setEditForm((f) => ({ ...f, industry_category: e.target.value }))}
-                                placeholder="Category"
+                                onChange={(v) => setEditForm((f) => ({ ...f, industry_category: v }))}
                                 className="w-full p-2 rounded-none border border-border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                               />
                             </td>

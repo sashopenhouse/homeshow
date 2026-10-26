@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { mapRegistrant, type RegfoxRegistrant } from "@/lib/regfox-mapper";
 import { Inbox, Check, X, ChevronDown, ChevronUp, ExternalLink, RefreshCw } from "lucide-react";
 import { absoluteUrl } from "@/lib/utils";
+import CategorySelect from "@/components/CategorySelect";
 
 interface RegfoxRegistration {
   id: string;
@@ -303,7 +304,7 @@ export default function AdminRegfoxPage() {
                   </div>
                   <div>
                     <label className={labelClass}>Category</label>
-                    <input type="text" value={values.category} onChange={(e) => updateField(row.id, "category", e.target.value)} placeholder="e.g. Windows & Doors" className={inputClass} />
+                    <CategorySelect value={values.category} onChange={(v) => updateField(row.id, "category", v)} className={inputClass} />
                   </div>
                   <div>
                     <label className={labelClass}>Booth Choices (#1, #2, #3)</label>
