@@ -11,7 +11,7 @@ const REGFOX_APPLY_URL = "https://kesslerpromotionsinc.regfox.com/2027-home-show
 // Applications aren't open to the public yet. Flip to true to restore the
 // link to RegFox — the same flag exists in vendors/page.tsx and both need
 // flipping together.
-const APPLICATIONS_OPEN = false;
+const APPLICATIONS_OPEN = true;
 
 const infoSections = [
   {

@@ -12,7 +12,7 @@ const APPLY_IS_EXTERNAL = REGFOX_APPLY_URL.startsWith("http");
 // Applications aren't open to the public yet. Flip to true to restore the
 // "Apply to Exhibit" / "View Full Terms & Apply" links to RegFox — the same
 // flag exists in vendors/info/page.tsx and both need flipping together.
-const APPLICATIONS_OPEN = false;
+const APPLICATIONS_OPEN = true;
 
 const highlights = [
   { icon: Users, title: "20,000+ attendees", desc: "Two days of motivated homeowners under one roof." },
