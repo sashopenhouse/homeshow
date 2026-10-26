@@ -23,6 +23,7 @@ interface RegfoxRegistration {
   mapped_is_sponsor: boolean | null;
   mapped_returning_vendor: boolean | null;
   mapped_product_description: string | null;
+  mapped_category: string | null;
   mapped_needs_electricity: boolean | null;
   mapped_outlets_110: number | null;
   mapped_outlets_220: number | null;
@@ -42,13 +43,14 @@ interface EditValues {
   contact_phone: string;
   website_url: string;
   address: string;
+  category: string;
   booth_choices: string;
   is_sponsor: boolean;
   sponsor_amount: string;
 }
 
 const SELECT_COLUMNS =
-  "id, regfox_registrant_id, regfox_order_id, regfox_lookup_id, mapped_company_name, mapped_contact_name, mapped_contact_email, mapped_contact_phone, mapped_website_url, mapped_ticket_type, mapped_address, mapped_booth_choices, mapped_sponsor_amount, mapped_is_sponsor, mapped_returning_vendor, mapped_product_description, mapped_needs_electricity, mapped_outlets_110, mapped_outlets_220, mapped_notes, order_total, raw_payload, status, vendor_id, received_at, reviewed_at";
+  "id, regfox_registrant_id, regfox_order_id, regfox_lookup_id, mapped_company_name, mapped_contact_name, mapped_contact_email, mapped_contact_phone, mapped_website_url, mapped_ticket_type, mapped_address, mapped_booth_choices, mapped_sponsor_amount, mapped_is_sponsor, mapped_returning_vendor, mapped_product_description, mapped_category, mapped_needs_electricity, mapped_outlets_110, mapped_outlets_220, mapped_notes, order_total, raw_payload, status, vendor_id, received_at, reviewed_at";
 
 function toEditValues(r: RegfoxRegistration): EditValues {
   return {
@@ -58,6 +60,7 @@ function toEditValues(r: RegfoxRegistration): EditValues {
     contact_phone: r.mapped_contact_phone || "",
     website_url: r.mapped_website_url || "",
     address: r.mapped_address || "",
+    category: r.mapped_category || "",
     booth_choices: (r.mapped_booth_choices || []).join(", "),
     is_sponsor: r.mapped_is_sponsor === true,
     sponsor_amount: r.mapped_sponsor_amount != null ? String(r.mapped_sponsor_amount) : "",
@@ -82,6 +85,7 @@ function vendorFieldsFrom(values: EditValues) {
     contact_phone: values.contact_phone.trim() || null,
     website_url: absoluteUrl(values.website_url),
     address: values.address.trim() || null,
+    industry_category: values.category.trim() || null,
     booth_choices: parseBoothChoices(values.booth_choices),
     is_sponsor: values.is_sponsor,
     sponsor_amount: parseAmount(values.sponsor_amount),
@@ -296,6 +300,10 @@ export default function AdminRegfoxPage() {
                   <div>
                     <label className={labelClass}>Address</label>
                     <input type="text" value={values.address} onChange={(e) => updateField(row.id, "address", e.target.value)} className={inputClass} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Category</label>
+                    <input type="text" value={values.category} onChange={(e) => updateField(row.id, "category", e.target.value)} placeholder="e.g. Windows & Doors" className={inputClass} />
                   </div>
                   <div>
                     <label className={labelClass}>Booth Choices (#1, #2, #3)</label>

@@ -51,6 +51,7 @@ export interface MappedRegistration {
   mapped_is_sponsor: boolean | null;
   mapped_returning_vendor: boolean | null;
   mapped_product_description: string | null;
+  mapped_category: string | null;
   mapped_needs_electricity: boolean | null;
   mapped_outlets_110: number | null;
   mapped_outlets_220: number | null;
@@ -62,6 +63,14 @@ export interface MappedRegistration {
 export function getField(data: RegfoxDataEntry[] | undefined, key: string): RegfoxDataEntry | undefined {
   if (!Array.isArray(data)) return undefined;
   return data.find((entry) => entry && typeof entry === "object" && entry.key === key);
+}
+
+// Same as getField but matches the key against a pattern. Used only where the
+// form's exact key isn't known yet (business category) — still key-based,
+// never label-based.
+export function findFieldByKey(data: RegfoxDataEntry[] | undefined, pattern: RegExp): RegfoxDataEntry | undefined {
+  if (!Array.isArray(data)) return undefined;
+  return data.find((entry) => entry && typeof entry === "object" && typeof entry.key === "string" && pattern.test(entry.key));
 }
 
 function toStr(value: unknown): string | null {
@@ -103,6 +112,17 @@ function toBool(entry: RegfoxDataEntry | undefined): boolean | null {
   return null;
 }
 
+// A category field may be a plain text field or a choice field; take the
+// chosen option's label when there is one, otherwise the raw value.
+function categoryValue(entry: RegfoxDataEntry | undefined): string | null {
+  if (!entry) return null;
+  const chosen = chosenOption(entry);
+  if (chosen) return toStr(chosen.label ?? chosen.key);
+  const value = entry.value;
+  if (value && typeof value === "object" && !Array.isArray(value)) return null;
+  return toStr(value);
+}
+
 export function mapRegistrant(registrant: RegfoxRegistrant | null | undefined): MappedRegistration {
   const data = registrant?.data;
 
@@ -138,6 +158,7 @@ export function mapRegistrant(registrant: RegfoxRegistrant | null | undefined): 
     mapped_is_sponsor: toBool(getField(data, "doYouNeedAdditional")),
     mapped_returning_vendor: toBool(getField(data, "areYouReturningVendor")),
     mapped_product_description: toStr(getField(data, "productDescription")?.value),
+    mapped_category: categoryValue(findFieldByKey(data, /categor|industry|businessType|typeOfBusiness/i)),
     mapped_needs_electricity: toBool(getField(data, "doYouNeedElectricity2")),
     mapped_outlets_110: toInt(getField(data, "howMany110vOutlets")?.value),
     mapped_outlets_220: toInt(getField(data, "howMany220Outlets")?.value),

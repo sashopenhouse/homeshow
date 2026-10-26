@@ -98,6 +98,12 @@ describe("mapRegistrant — defensive behaviour", () => {
     expect(mapped.mapped_booth_choices).toEqual(["12"]);
   });
 
+  it("maps a business category from a category-like key, by option label or raw value", () => {
+    expect(mapRegistrant({ data: [{ key: "businessCategory", type: "multipleChoice", options: [{ label: "Windows & Doors", value: true }] }] }).mapped_category).toBe("Windows & Doors");
+    expect(mapRegistrant({ data: [{ key: "industry", type: "textField", value: "Landscaping" }] }).mapped_category).toBe("Landscaping");
+    expect(mapRegistrant(registrant0008).mapped_category).toBeNull();
+  });
+
   it("getField matches on key, never on label", () => {
     expect(getField(registrant0008.data, "contactName")?.label).toBe("Company Name");
     expect(getField(registrant0008.data, "Company Name")).toBeUndefined();

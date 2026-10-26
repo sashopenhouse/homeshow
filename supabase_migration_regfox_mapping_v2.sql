@@ -13,6 +13,7 @@ ALTER TABLE regfox_registrations
   ADD COLUMN IF NOT EXISTS mapped_is_sponsor BOOLEAN,
   ADD COLUMN IF NOT EXISTS mapped_returning_vendor BOOLEAN,
   ADD COLUMN IF NOT EXISTS mapped_product_description TEXT,
+  ADD COLUMN IF NOT EXISTS mapped_category TEXT,
   ADD COLUMN IF NOT EXISTS mapped_needs_electricity BOOLEAN,
   ADD COLUMN IF NOT EXISTS mapped_outlets_110 INTEGER,
   ADD COLUMN IF NOT EXISTS mapped_outlets_220 INTEGER,
