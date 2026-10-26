@@ -1,0 +1,58 @@
+{
+  "_note": "Reconstructed from the field-key/shape description of RegFox order 2027HMSHWNXSCFOY0008 (form 1041902). Replace this file with the exact raw_payload JSONB from that regfox_registrations row once it is exported — the test values are the ones the real row is expected to produce.",
+  "id": 141302700,
+  "lookupId": 94973193,
+  "amount": 795,
+  "data": [
+    { "key": "registrationOptions", "type": "regOptions", "label": "Booth Options",
+      "options": [
+        { "key": "10x10", "label": "10 x 10", "value": true, "amount": 795 },
+        { "key": "10x20", "label": "10 x 20", "value": false, "amount": 1395 }
+      ],
+      "payment": { "amount": 795 } },
+    { "key": "contactName", "type": "textField", "label": "Company Name", "value": "SJTV dba CNY Open House" },
+    { "key": "name", "type": "name", "label": "Name",
+      "first": { "value": "Katie" },
+      "last": { "value": "Reilly" } },
+    { "key": "email", "type": "email", "label": "Email", "value": "hello@cnyopenhouse.com" },
+    { "key": "email2", "type": "email", "label": "Confirm Email", "value": "hello@cnyopenhouse.com" },
+    { "key": "phone", "type": "phone", "label": "Phone", "value": "+13156247682" },
+    { "key": "address", "type": "address", "label": "Address",
+      "street1": { "value": "8 Burrstone Rd" },
+      "city": { "value": "New York Mills" },
+      "state": { "value": "NY" },
+      "postalCode": { "value": "13417" },
+      "country": { "value": "US" } },
+    { "key": "website", "type": "textField", "label": "Website", "value": "https://www.cnyopenhouse.com/" },
+    { "key": "areYouReturningVendor", "type": "multipleChoice", "label": "Are you a returning vendor?",
+      "options": [
+        { "key": "yes", "label": "Yes", "value": true },
+        { "key": "no", "label": "No", "value": false }
+      ] },
+    { "key": "productDescription", "type": "textArea", "label": "Product / Service Description", "value": "Home improvement media." },
+    { "key": "choice1", "type": "textField", "label": "Booth Choice #1", "value": "1" },
+    { "key": "choice12", "type": "textField", "label": "Booth Choice #2", "value": "2" },
+    { "key": "choice2", "type": "textField", "label": "Booth Choice #3", "value": "3" },
+    { "key": "doYouNeedAdditional", "type": "multipleChoice", "label": "Are you a sponsor", "value": "no",
+      "options": [
+        { "key": "yes", "label": "Yes", "value": false },
+        { "key": "no", "label": "No", "value": true }
+      ] },
+    { "key": "doYouNeedElectricity2", "type": "multipleChoice", "label": "Do you need electricity?", "value": "yes",
+      "options": [
+        { "key": "yes", "label": "Yes", "value": true },
+        { "key": "no", "label": "No", "value": false }
+      ] },
+    { "key": "howMany110vOutlets", "type": "number", "label": "How many 110v outlets?", "value": 2 },
+    { "key": "howMany220Outlets", "type": "number", "label": "How many 220v outlets?", "value": null },
+    { "key": "additionalNotescomments", "type": "textArea", "label": "Additional notes / comments", "value": "" },
+    { "key": "mayWeCommunicateWith", "type": "checkbox", "label": "May we communicate with you by email?", "value": true },
+    { "key": "howDidYouHear2", "type": "multipleChoice", "label": "How did you hear about us?",
+      "options": [ { "key": "returning", "label": "Returning vendor", "value": true } ] },
+    { "key": "breakdownAgreement", "type": "checkbox", "label": "Breakdown agreement", "value": true },
+    { "key": "wouldYouLikeTo", "type": "multipleChoice", "label": "Would you like a vendor spotlight?",
+      "options": [ { "key": "no", "label": "No", "value": true } ] },
+    { "key": "terms", "type": "checkbox", "label": "I agree to the terms", "value": true },
+    { "key": "coupon_code1", "type": "coupon", "label": "Coupon Code", "value": "" }
+  ]
+}

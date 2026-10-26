@@ -50,6 +50,10 @@ export interface MappedRegistration {
   mapped_is_sponsor: boolean | null;
   mapped_returning_vendor: boolean | null;
   mapped_product_description: string | null;
+  mapped_needs_electricity: boolean | null;
+  mapped_outlets_110: number | null;
+  mapped_outlets_220: number | null;
+  mapped_notes: string | null;
   order_total: number | null;
   regfox_lookup_id: string | null;
 }
@@ -70,6 +74,11 @@ function toNum(value: unknown): number | null {
   if (value == null || value === "") return null;
   const n = typeof value === "number" ? value : Number(String(value).replace(/[^0-9.-]/g, ""));
   return Number.isFinite(n) ? n : null;
+}
+
+function toInt(value: unknown): number | null {
+  const n = toNum(value);
+  return n == null ? null : Math.trunc(n);
 }
 
 function part(entry: RegfoxDataEntry | undefined, name: string): string | null {
@@ -128,6 +137,10 @@ export function mapRegistrant(registrant: RegfoxRegistrant | null | undefined): 
     mapped_is_sponsor: toBool(getField(data, "doYouNeedAdditional")),
     mapped_returning_vendor: toBool(getField(data, "areYouReturningVendor")),
     mapped_product_description: toStr(getField(data, "productDescription")?.value),
+    mapped_needs_electricity: toBool(getField(data, "doYouNeedElectricity2")),
+    mapped_outlets_110: toInt(getField(data, "howMany110vOutlets")?.value),
+    mapped_outlets_220: toInt(getField(data, "howMany220Outlets")?.value),
+    mapped_notes: toStr(getField(data, "additionalNotescomments")?.value),
     order_total: toNum(registrant?.amount),
     regfox_lookup_id: toStr(registrant?.lookupId),
   };

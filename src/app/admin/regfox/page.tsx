@@ -22,6 +22,10 @@ interface RegfoxRegistration {
   mapped_is_sponsor: boolean | null;
   mapped_returning_vendor: boolean | null;
   mapped_product_description: string | null;
+  mapped_needs_electricity: boolean | null;
+  mapped_outlets_110: number | null;
+  mapped_outlets_220: number | null;
+  mapped_notes: string | null;
   order_total: number | null;
   raw_payload: unknown;
   status: string;
@@ -36,13 +40,14 @@ interface EditValues {
   contact_email: string;
   contact_phone: string;
   website_url: string;
+  address: string;
   booth_choices: string;
   is_sponsor: boolean;
   sponsor_amount: string;
 }
 
 const SELECT_COLUMNS =
-  "id, regfox_registrant_id, regfox_order_id, regfox_lookup_id, mapped_company_name, mapped_contact_name, mapped_contact_email, mapped_contact_phone, mapped_website_url, mapped_ticket_type, mapped_address, mapped_booth_choices, mapped_sponsor_amount, mapped_is_sponsor, mapped_returning_vendor, mapped_product_description, order_total, raw_payload, status, vendor_id, received_at, reviewed_at";
+  "id, regfox_registrant_id, regfox_order_id, regfox_lookup_id, mapped_company_name, mapped_contact_name, mapped_contact_email, mapped_contact_phone, mapped_website_url, mapped_ticket_type, mapped_address, mapped_booth_choices, mapped_sponsor_amount, mapped_is_sponsor, mapped_returning_vendor, mapped_product_description, mapped_needs_electricity, mapped_outlets_110, mapped_outlets_220, mapped_notes, order_total, raw_payload, status, vendor_id, received_at, reviewed_at";
 
 function toEditValues(r: RegfoxRegistration): EditValues {
   return {
@@ -51,6 +56,7 @@ function toEditValues(r: RegfoxRegistration): EditValues {
     contact_email: r.mapped_contact_email || "",
     contact_phone: r.mapped_contact_phone || "",
     website_url: r.mapped_website_url || "",
+    address: r.mapped_address || "",
     booth_choices: (r.mapped_booth_choices || []).join(", "),
     is_sponsor: r.mapped_is_sponsor === true,
     sponsor_amount: r.mapped_sponsor_amount != null ? String(r.mapped_sponsor_amount) : "",
@@ -74,6 +80,7 @@ function vendorFieldsFrom(values: EditValues) {
     contact_email: values.contact_email.trim() || null,
     contact_phone: values.contact_phone.trim() || null,
     website_url: values.website_url.trim() || null,
+    address: values.address.trim() || null,
     booth_choices: parseBoothChoices(values.booth_choices),
     is_sponsor: values.is_sponsor,
     sponsor_amount: parseAmount(values.sponsor_amount),
@@ -180,11 +187,17 @@ export default function AdminRegfoxPage() {
     setBusyId(row.id);
     try {
       const mapped = mapRegistrant(row.raw_payload as RegfoxRegistrant);
-      const { error } = await supabase.from("regfox_registrations").update(mapped).eq("id", row.id);
+      // An "added" row whose vendor has since been deleted is orphaned —
+      // send it back to pending so it can be re-added with the real fields.
+      const orphaned = row.status === "added" && !row.vendor_id;
+      const patch = orphaned ? { ...mapped, status: "pending", reviewed_at: null, reviewed_by: null } : mapped;
+      const { error } = await supabase.from("regfox_registrations").update(patch).eq("id", row.id);
       if (error) throw error;
 
-      const updated: RegfoxRegistration = { ...row, ...mapped };
-      let vendorNote = "";
+      const updated: RegfoxRegistration = orphaned
+        ? { ...row, ...mapped, status: "pending", reviewed_at: null }
+        : { ...row, ...mapped };
+      let vendorNote = orphaned ? " Its vendor record no longer exists, so it is back in the pending queue — review and add it again." : "";
       if (row.status === "added" && row.vendor_id) {
         const fields = vendorFieldsFrom(toEditValues(updated));
         if (fields.company_name) {
@@ -280,6 +293,10 @@ export default function AdminRegfoxPage() {
                     <input type="text" value={values.website_url} onChange={(e) => updateField(row.id, "website_url", e.target.value)} className={inputClass} />
                   </div>
                   <div>
+                    <label className={labelClass}>Address</label>
+                    <input type="text" value={values.address} onChange={(e) => updateField(row.id, "address", e.target.value)} className={inputClass} />
+                  </div>
+                  <div>
                     <label className={labelClass}>Booth Choices (#1, #2, #3)</label>
                     <input type="text" value={values.booth_choices} onChange={(e) => updateField(row.id, "booth_choices", e.target.value)} placeholder="e.g. 3, 4, 5" className={inputClass} />
                   </div>
@@ -299,7 +316,14 @@ export default function AdminRegfoxPage() {
                   {row.mapped_ticket_type && <span>Booth type: <strong className="text-foreground">{row.mapped_ticket_type}</strong></span>}
                   {row.order_total != null && <span>Order total: <strong className="text-foreground">${row.order_total.toLocaleString()}</strong></span>}
                   {row.mapped_returning_vendor != null && <span>Returning vendor: <strong className="text-foreground">{row.mapped_returning_vendor ? "Yes" : "No"}</strong></span>}
-                  {row.mapped_address && <span>Address: <strong className="text-foreground">{row.mapped_address}</strong></span>}
+                  {row.mapped_needs_electricity != null && (
+                    <span>
+                      Electricity: <strong className="text-foreground">{row.mapped_needs_electricity ? "Yes" : "No"}</strong>
+                      {row.mapped_needs_electricity && (row.mapped_outlets_110 != null || row.mapped_outlets_220 != null) && (
+                        <> ({row.mapped_outlets_110 ?? 0} × 110v, {row.mapped_outlets_220 ?? 0} × 220v)</>
+                      )}
+                    </span>
+                  )}
                   {row.regfox_order_id && <span>Order #{row.regfox_order_id}</span>}
                   <span>Received {new Date(row.received_at).toLocaleString()}</span>
                 </div>
@@ -307,6 +331,12 @@ export default function AdminRegfoxPage() {
                   <div className="px-5 pb-4 text-xs text-muted-foreground">
                     <span className="font-bold uppercase text-[10px]">Products / services: </span>
                     <span className="text-foreground">{row.mapped_product_description}</span>
+                  </div>
+                )}
+                {row.mapped_notes && (
+                  <div className="px-5 pb-4 text-xs text-muted-foreground">
+                    <span className="font-bold uppercase text-[10px]">Notes: </span>
+                    <span className="text-foreground">{row.mapped_notes}</span>
                   </div>
                 )}
 
