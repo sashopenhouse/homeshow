@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Save, Sparkles } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
+import RichTextEditor from "@/components/RichTextEditor";
+import { excerptFromHtml, stripHtml } from "@/lib/post-html";
 
 export default function AdminCreatePostPage() {
   const router = useRouter();
@@ -31,7 +33,7 @@ export default function AdminCreatePostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !slug || !content) {
+    if (!title || !slug || !stripHtml(content)) {
       setErrorMsg("Please fill out the Title, Slug, and Content fields.");
       return;
     }
@@ -44,7 +46,7 @@ export default function AdminCreatePostPage() {
         {
           title,
           slug,
-          excerpt: excerpt || content.substring(0, 120) + "...",
+          excerpt: excerpt || excerptFromHtml(content),
           content,
           category,
           author,
@@ -160,13 +162,10 @@ export default function AdminCreatePostPage() {
           {/* Content */}
           <div>
             <label className="text-sm font-medium mb-1.5 block text-foreground">Full Body Content</label>
-            <textarea
-              required
-              rows={8}
+            <RichTextEditor
               value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="w-full p-3 rounded-none border bg-background text-sm min-h-[200px] focus:outline-none focus:ring-1 focus:ring-primary border-border"
-              placeholder="Write the full body content of your post here (HTML or plain text)..."
+              onChange={setContent}
+              placeholder="Write your post here. Add headings, links, images and videos from the toolbar..."
             />
           </div>
 

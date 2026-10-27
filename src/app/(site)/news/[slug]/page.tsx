@@ -8,6 +8,7 @@ import { ArrowLeft, Calendar, User, Rss } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import ShareButtons from "@/components/ShareButtons";
+import PostBody from "@/components/PostBody";
 
 interface Post {
   title: string;
@@ -168,11 +169,7 @@ export default function PostDetailsPage({ params }: { params: Promise<{ slug: st
         </div>
 
         {/* Content Body */}
-        <div className="prose prose-primary max-w-none text-foreground leading-relaxed space-y-6 text-base md:text-lg">
-          {post.content.split("\n\n").map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
-        </div>
+        <PostBody content={post.content} className="max-w-none text-foreground text-base md:text-lg" />
 
         {/* Share */}
         <div className="mt-12 pt-6 border-t border-border">
