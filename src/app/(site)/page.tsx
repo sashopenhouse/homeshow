@@ -17,7 +17,7 @@ const highlights = [
 
 const stats = [
   { value: "200+", label: "Exhibitors" },
-  { value: "20K+", label: "Attendees" },
+  { value: "5K+", label: "Attendees" },
   { value: "2", label: "Days" },
   { value: "50+", label: "Giveaways" },
 ];

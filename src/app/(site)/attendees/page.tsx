@@ -1,48 +1,37 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { Calendar, Ticket, MapPin, Clock, Users } from "lucide-react";
 
-const days = [
-  {
-    label: "Saturday",
-    date: "April 24, 2027",
-    hours: "9:00 AM – 6:00 PM",
-    events: [
-      { time: "9:00 AM", title: "Doors Open", desc: "Welcome to the 2027 Home Show. Registration and vendor walkthrough begins." },
-      { time: "11:00 AM", title: "Live Music Starts", desc: "Local and regional artists perform on the main stage." },
-      { time: "1:00 PM", title: "Grand Prize Giveaway", desc: "First major giveaway drawing at center stage." },
-      { time: "2:00 PM", title: "Children's Museum & Zoomobile", desc: "Interactive exhibits, face painting, and live wildlife in the kids zone." },
-      { time: "4:00 PM", title: "Food & Beverage Tasting", desc: "Sample local craft beverages and culinary delights." },
-      { time: "6:00 PM", title: "Day 1 Concludes", desc: "Doors close for Saturday — see you tomorrow!" },
-    ],
-  },
-  {
-    label: "Sunday",
-    date: "April 25, 2027",
-    hours: "9:00 AM – 4:00 PM",
-    events: [
-      { time: "9:00 AM", title: "Doors Open", desc: "Day two of the 2027 Home Show kicks off." },
-      { time: "11:00 AM", title: "Live Music Returns", desc: "More performances from local artists on the main stage." },
-      { time: "12:00 PM", title: "Exhibitor Demos", desc: "Hands-on demonstrations from home improvement experts across the floor." },
-      { time: "1:30 PM", title: "$25,000 Grand Prize Drawing", desc: "The big giveaway drawing — must be present to win." },
-      { time: "3:00 PM", title: "Final Giveaways", desc: "Last round of door prizes and vendor raffles." },
-      { time: "4:00 PM", title: "Show Concludes", desc: "Doors close for the 2027 Home Show. Thanks for coming!" },
-    ],
-  },
+const SHOW_HOURS = [
+  { day: "Saturday", date: "April 24, 2027", hours: "9:00 AM – 6:00 PM" },
+  { day: "Sunday", date: "April 25, 2027", hours: "9:00 AM – 4:00 PM" },
 ];
+
+const ADMISSION = [
+  { who: "Adults", price: "$10", note: "$8 in advance" },
+  { who: "Seniors (55+), Military, First Responders & Healthcare", price: "$8", note: "" },
+  { who: "Children 16 and under", price: "Free", note: "" },
+];
+
+// Same pin as the contact page: Utica University Nexus Center.
+const VENUE_MAP_SRC =
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2931.2581622383816!2d-75.23439402345521!3d43.10427327113117!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89d94121e7855555%3A0xc34ccfa9f0a20f92!2sUtica%20University%20Nexus%20Center!5e0!3m2!1sen!2sus!4v1707073235655!5m2!1sen!2sus";
+const VENUE_DIRECTIONS_URL = "https://www.google.com/maps/search/?api=1&query=Utica+University+Nexus+Center+Utica+NY";
 
 export default function AttendeesPage() {
   const container = useRef<HTMLDivElement>(null);
-  const [activeDay, setActiveDay] = useState(0);
-
   useGSAP(
     () => {
       gsap.fromTo(".fade-in-header",
         { y: -20, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }
+      );
+      gsap.fromTo(".info-block",
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: "power3.out", delay: 0.2 }
       );
       gsap.fromTo(".ticket-box",
         { y: 30, opacity: 0 },
@@ -51,19 +40,6 @@ export default function AttendeesPage() {
     },
     { scope: container }
   );
-
-  // Re-animate the timeline whenever the day toggles
-  useGSAP(
-    () => {
-      gsap.fromTo(".timeline-item",
-        { x: -20, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: "power3.out" }
-      );
-    },
-    { scope: container, dependencies: [activeDay] }
-  );
-
-  const day = days[activeDay];
 
   return (
     <main ref={container} className="flex-1 bg-background py-32 px-6">
@@ -78,56 +54,90 @@ export default function AttendeesPage() {
             Plan Your <span className="text-primary italic">Visit</span>
           </h1>
           <p className="text-muted-foreground max-w-xl mx-auto text-base">
-            Everything you need for an amazing spring weekend. Buy your tickets, review each day&apos;s schedule, and prepare for a home show like no other.
+            Everything you need for an amazing spring weekend. Check show hours and admission, find the Nexus Center, and grab your tickets ahead of time.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          {/* Timeline Column */}
-          <div className="lg:col-span-7">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b pb-4 mb-6">
-              <h2 className="text-2xl font-bold flex items-center gap-2">
+          {/* Info Column */}
+          <div className="lg:col-span-7 space-y-10">
+            {/* Blurb */}
+            <div className="info-block">
+              <h2 className="text-2xl font-bold flex items-center gap-2 mb-3">
                 <Calendar className="text-primary" />
-                Event Schedule
+                About the Show
               </h2>
-              {/* Day toggle */}
-              <div className="inline-flex bg-muted border border-border rounded-none p-1 self-start">
-                {days.map((d, i) => (
-                  <button
-                    key={d.label}
-                    onClick={() => setActiveDay(i)}
-                    className={`px-4 py-1.5 text-xs font-bold rounded-none transition-all ${
-                      activeDay === i
-                        ? "bg-primary text-white shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {d.label}
-                  </button>
+              <p className="text-muted-foreground leading-relaxed">
+                Two full days of home improvement under one roof at the Utica University Nexus Center. Meet
+                hundreds of local exhibitors, watch live demos, enjoy live music and family activities, and
+                enter to win giveaways throughout the weekend. The full event schedule will be posted here as
+                the show approaches.
+              </p>
+            </div>
+
+            {/* Hours */}
+            <div className="info-block">
+              <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
+                <Clock className="text-primary" size={20} />
+                Show Hours
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {SHOW_HOURS.map((d) => (
+                  <div key={d.day} className="bg-white border border-border p-5 rounded-none">
+                    <div className="text-xs font-bold uppercase tracking-wider text-primary mb-1">{d.day}</div>
+                    <div className="text-sm text-muted-foreground mb-2">{d.date}</div>
+                    <div className="text-lg font-black text-foreground">{d.hours}</div>
+                  </div>
                 ))}
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-2 mb-8 text-sm">
-              <span className="font-bold text-foreground">{day.date}</span>
-              <span className="text-muted-foreground">· {day.hours}</span>
+            {/* Admission */}
+            <div className="info-block">
+              <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
+                <Ticket className="text-primary" size={20} />
+                Admission
+              </h2>
+              <ul className="bg-white border border-border divide-y divide-border rounded-none">
+                {ADMISSION.map((row) => (
+                  <li key={row.who} className="flex items-center justify-between gap-4 px-5 py-4">
+                    <span className="text-sm font-medium text-foreground">{row.who}</span>
+                    <span className="text-right shrink-0">
+                      <span className="text-lg font-black text-foreground">{row.price}</span>
+                      {row.note && <span className="block text-xs text-muted-foreground">{row.note}</span>}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent">
-              {day.events.map((item, idx) => (
-                <div key={`${activeDay}-${idx}`} className="timeline-item relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-primary text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
-                    <Clock size={16} />
-                  </div>
-                  <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-6 rounded-none border border-border shadow-sm hover:border-primary/40 transition-colors">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-bold text-foreground">{item.title}</h3>
-                      <time className="text-xs font-semibold text-primary px-2 py-1 bg-primary/10 rounded-none">{item.time}</time>
-                    </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
+            {/* Venue map */}
+            <div className="info-block">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <MapPin className="text-primary" size={20} />
+                  Getting There
+                </h2>
+                <a
+                  href={VENUE_DIRECTIONS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-bold text-primary hover:underline underline-offset-4"
+                >
+                  Open in Google Maps
+                </a>
+              </div>
+              <div className="w-full aspect-[4/3] sm:aspect-[16/9] border border-border bg-muted overflow-hidden">
+                <iframe
+                  src={VENUE_MAP_SRC}
+                  title="Map to the Utica University Nexus Center"
+                  className="w-full h-full border-0"
+                  loading="lazy"
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+              <p className="text-sm text-muted-foreground mt-3">Utica University Nexus Center, Utica NY.</p>
             </div>
           </div>
 
