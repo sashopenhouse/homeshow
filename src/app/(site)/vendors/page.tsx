@@ -15,7 +15,7 @@ const APPLY_IS_EXTERNAL = REGFOX_APPLY_URL.startsWith("http");
 const APPLICATIONS_OPEN = true;
 
 const highlights = [
-  { icon: Users, title: "20,000+ attendees", desc: "Two days of motivated homeowners under one roof." },
+  { icon: Users, title: "4,000–5,000 attendees", desc: "Two days of motivated homeowners under one roof." },
   { icon: Calendar, title: "April 24–25, 2027", desc: "Saturday & Sunday at the Utica University Nexus Center." },
   { icon: DollarSign, title: "Booths from $395", desc: "10x10 standard, 10x20 end caps, tasting & non-profit rates." },
   { icon: CheckCircle2, title: "200+ exhibitors", desc: "Join the region's premier home improvement showcase." },

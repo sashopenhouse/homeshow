@@ -108,8 +108,8 @@ export default function ContactUsPage() {
             </div>
             <div>
               <h3 className="font-bold text-foreground text-sm uppercase tracking-wider mb-1">Call Us</h3>
-              <a href="tel:+13157948259" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                (315) 794-8259
+              <a href="tel:+13157940695" className="text-muted-foreground hover:text-primary transition-colors text-sm">
+                (315) 794-0695
               </a>
             </div>
           </div>
@@ -140,7 +140,7 @@ export default function ContactUsPage() {
               <h3 className="text-lg font-bold text-foreground mb-2">Thanks — your message is on its way</h3>
               <p className="text-sm text-muted-foreground max-w-md mx-auto">
                 We&apos;ll get back to you at the email you provided. For anything urgent, call us at{" "}
-                <a href="tel:+13157948259" className="text-primary font-semibold">(315) 794-8259</a>.
+                <a href="tel:+13157940695" className="text-primary font-semibold">(315) 794-0695</a>.
               </p>
             </div>
           ) : (
