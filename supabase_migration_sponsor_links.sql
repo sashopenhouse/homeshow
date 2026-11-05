@@ -6,3 +6,6 @@
 -- by the app before saving and again when rendered.
 
 ALTER TABLE sponsors ADD COLUMN IF NOT EXISTS website_url TEXT;
+
+-- Make the API see the new column right away.
+NOTIFY pgrst, 'reload schema';
